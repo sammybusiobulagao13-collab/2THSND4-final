@@ -1,24 +1,332 @@
 <!DOCTYPE html>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
-        {% block stylesheets %}
-        {% endblock %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}2THSND4 - Streetwear Culture{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/forwbe.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('style.css') }}">
+    <style>
+        /* Modernized flash messages */
+        .flash-container {
+            max-width: 1200px;
+            margin: 15px auto 0;
+            padding: 0 20px;
+            position: relative;
+            z-index: 999;
+        }
+        .flash-alert {
+            padding: 14px 20px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            animation: fadeIn 0.3s ease;
+        }
+        .flash-success { background: rgba(40, 167, 69, 0.2); border: 1px solid #28a745; color: #5dd879; }
+        .flash-danger { background: rgba(220, 53, 69, 0.2); border: 1px solid #dc3545; color: #ff6b7b; }
+        .flash-warning { background: rgba(255, 193, 7, 0.2); border: 1px solid #ffc107; color: #ffd659; }
+        .flash-info { background: rgba(23, 162, 184, 0.2); border: 1px solid #17a2b8; color: #5bc0de; }
+        .flash-close {
+            background: none;
+            border: none;
+            color: inherit;
+            cursor: pointer;
+            font-size: 16px;
+            opacity: 0.8;
+            padding: 0 5px;
+        }
+        .flash-close:hover { opacity: 1; }
 
-        {% block javascripts %}
-            {% block importmap %}{{ importmap('app') }}{% endblock %}
-        {% endblock %}
+        /* Role Badges */
+        .role-badge {
+            display: inline-block;
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+            margin-top: 4px;
+        }
+        .role-badge-admin { background: rgba(220, 53, 69, 0.2); color: #ff4d5a; border: 1px solid rgba(220, 53, 69, 0.4); }
+        .role-badge-staff { background: rgba(23, 162, 184, 0.2); color: #17a2b8; border: 1px solid rgba(23, 162, 184, 0.4); }
+        .role-badge-user { background: rgba(255, 255, 255, 0.1); color: #ddd; border: 1px solid rgba(255, 255, 255, 0.2); }
 
-        {% set frankenphp_hot_reload = app.request.server.get('FRANKENPHP_HOT_RELOAD') %}
-        {% if frankenphp_hot_reload %}
-        <meta name="frankenphp-hot-reload:url" content="{{ frankenphp_hot_reload }}">
-        <script src="https://cdn.jsdelivr.net/npm/idiomorph"></script>
-        <script src="https://cdn.jsdelivr.net/npm/frankenphp-hot-reload/+esm" type="module"></script>
-        {% endif %}
-    </head>
-    <body>
+        /* Modal confirmation */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            backdrop-filter: blur(5px);
+        }
+        .modal-box {
+            background: #111122;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 30px;
+            width: 90%;
+            max-width: 440px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+        }
+        .modal-box h3 { color: #fff; margin-bottom: 12px; font-family: var(--font-primary); font-size: 20px; }
+        .modal-box p { color: #aaa; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
+        .modal-actions { display: flex; gap: 12px; justify-content: center; }
+        .modal-btn {
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            border: none;
+        }
+        .modal-btn-cancel { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; }
+        .modal-btn-cancel:hover { background: rgba(255,255,255,0.1); }
+        .modal-btn-danger { background: #dc3545; color: #fff; }
+        .modal-btn-danger:hover { background: #bd2130; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+
+    <!-- NAVBAR -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-logo">
+                <a href="{{ path('app_home') }}">
+                    <img src="{{ asset('images/headerlogo.png') }}" alt="2THSND4 Logo">
+                </a>
+            </div>
+
+            <div class="nav-right">
+                <ul class="nav-links" id="primaryNavLinks">
+                    <li><a href="{{ path('app_home') }}" class="{{ app.current_route == 'app_home' ? 'active' : '' }}">HOME</a></li>
+                    <li><a href="{{ path('app_shop') }}" class="{{ app.current_route in ['app_shop', 'app_product_detail'] ? 'active' : '' }}">SHOP</a></li>
+                    <li><a href="{{ path('app_about') }}" class="{{ app.current_route == 'app_about' ? 'active' : '' }}">ABOUT</a></li>
+                    <li><a href="{{ path('app_contact') }}" class="{{ app.current_route == 'app_contact' ? 'active' : '' }}">CONTACT</a></li>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <li><a href="{{ path('app_admin_dashboard') }}" style="color: #ff4d5a;"><i class="fas fa-shield-alt"></i> ADMIN</a></li>
+                    {% elseif is_granted('ROLE_STAFF') %}
+                        <li><a href="{{ path('app_staff_products') }}" style="color: #17a2b8;"><i class="fas fa-tags"></i> STAFF</a></li>
+                    {% endif %}
+                </ul>
+
+                <div class="nav-icons">
+                    <!-- Search Bar Toggle -->
+                    <div class="search-wrapper">
+                        <a href="#" class="search-icon" id="searchToggle" title="Search catalog"><i class="fas fa-search"></i></a>
+                        <div class="search-dropdown" id="searchDropdown">
+                            <form action="{{ path('app_shop') }}" method="GET" style="display: flex; width: 100%;">
+                                <input type="text" name="search" placeholder="Search products..." id="searchInput" value="{{ app.request.query.get('search') }}">
+                                <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Cart Icon with badge -->
+                    <a href="{{ path('app_cart') }}" class="cart-icon" style="color: #fff; margin-right: 15px; position: relative;" title="View Cart">
+                        <i class="fas fa-shopping-cart"></i>
+                    </a>
+
+                    <!-- Profile / Dropdown Menu Trigger -->
+                    <button class="menu-toggle" id="menuToggle" title="Account Menu">
+                        {% if app.user %}
+                            <span style="display:inline-block; width: 28px; height: 28px; border-radius: 50%; background: #fff; color: #000; text-align: center; line-height: 28px; font-weight: bold; font-size: 13px;">
+                                {{ app.user.name|slice(0, 1)|upper }}
+                            </span>
+                        {% else %}
+                            <i class="fas fa-bars"></i>
+                        {% endif %}
+                    </button>
+                </div>
+
+                <!-- Dropdown Menu -->
+                <div class="dropdown-menu" id="dropdownMenu">
+                    {% if app.user %}
+                        <div class="dropdown-profile">
+                            <div class="dropdown-avatar">
+                                {{ app.user.name|slice(0, 1)|upper }}
+                            </div>
+                            <div class="dropdown-user-info">
+                                <span class="dropdown-name">{{ app.user.name }}</span>
+                                <span class="dropdown-email">{{ app.user.email }}</span>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <span class="role-badge role-badge-admin"><i class="fas fa-crown"></i> Admin</span>
+                                {% elseif is_granted('ROLE_STAFF') %}
+                                    <span class="role-badge role-badge-staff"><i class="fas fa-id-badge"></i> Staff</span>
+                                {% else %}
+                                    <span class="role-badge role-badge-user"><i class="fas fa-user"></i> Customer</span>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                    {% endif %}
+
+                    <ul>
+                        {% if not app.user %}
+                            <li><a href="{{ path('app_login') }}"><i class="fas fa-sign-in-alt"></i> Log In / Sign Up</a></li>
+                        {% else %}
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <li><a href="{{ path('app_admin_dashboard') }}"><i class="fas fa-chart-line"></i> Admin Dashboard</a></li>
+                                <li><a href="{{ path('app_admin_products') }}"><i class="fas fa-boxes"></i> Inventory (Products)</a></li>
+                                <li><a href="{{ path('app_admin_users') }}"><i class="fas fa-users-cog"></i> Users & Staff Management</a></li>
+                                <li><a href="{{ path('app_admin_orders') }}"><i class="fas fa-shipping-fast"></i> Customer Orders</a></li>
+                                <li><a href="{{ path('app_admin_messages') }}"><i class="fas fa-envelope"></i> Inquiries</a></li>
+                                <div class="dropdown-divider"></div>
+                            {% elseif is_granted('ROLE_STAFF') %}
+                                <li><a href="{{ path('app_staff_products') }}"><i class="fas fa-tshirt"></i> Staff Products Portal</a></li>
+                                <li><a href="{{ path('app_staff_product_new') }}"><i class="fas fa-plus-circle"></i> Add New Product</a></li>
+                                <div class="dropdown-divider"></div>
+                            {% endif %}
+
+                            <li><a href="{{ path('app_cart') }}"><i class="fas fa-shopping-cart"></i> My Cart</a></li>
+                            <li><a href="{{ path('app_my_orders') }}"><i class="fas fa-box"></i> My Orders</a></li>
+                            <li><a href="{{ path('app_profile') }}"><i class="fas fa-user-edit"></i> Profile & Password</a></li>
+                            <div class="dropdown-divider"></div>
+                            <li><a href="#" onclick="openLogoutModal(event)" class="logout-item" style="color: #ff4d5a;"><i class="fas fa-sign-out-alt"></i> Log Out</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- FLASH MESSAGES -->
+    <div class="flash-container">
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="flash-alert flash-{{ label == 'error' ? 'danger' : label }}">
+                    <div>
+                        {% if label in ['danger', 'error'] %}
+                            <i class="fas fa-exclamation-circle" style="margin-right: 8px;"></i>
+                        {% elseif label == 'success' %}
+                            <i class="fas fa-check-circle" style="margin-right: 8px;"></i>
+                        {% elseif label == 'warning' %}
+                            <i class="fas fa-exclamation-triangle" style="margin-right: 8px;"></i>
+                        {% else %}
+                            <i class="fas fa-info-circle" style="margin-right: 8px;"></i>
+                        {% endif %}
+                        {{ message }}
+                    </div>
+                    <button class="flash-close" onclick="this.parentElement.remove();">&times;</button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+    </div>
+
+    <!-- MAIN BODY -->
+    <main>
         {% block body %}{% endblock %}
-    </body>
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container footer-container">
+            <div class="footer-col">
+                <img src="{{ asset('images/headerlogo.png') }}" alt="2THSND4 Logo" class="footer-logo">
+                <p>Redefining streetwear aesthetics. High precision cuts and timeless confidence engineered for the modern streets.</p>
+                <div class="footer-socials">
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+            <div class="footer-col">
+                <h4>QUICK LINKS</h4>
+                <ul>
+                    <li><a href="{{ path('app_home') }}">Home</a></li>
+                    <li><a href="{{ path('app_shop') }}">Shop Catalog</a></li>
+                    <li><a href="{{ path('app_about') }}">About 2THSND4</a></li>
+                    <li><a href="{{ path('app_contact') }}">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>COLLECTIONS</h4>
+                <ul>
+                    <li><a href="{{ path('app_shop', {'category': 'T-Shirts'}) }}">Heavyweight Tees</a></li>
+                    <li><a href="{{ path('app_shop', {'category': 'Hoodies'}) }}">Fleece Hoodies</a></li>
+                    <li><a href="{{ path('app_shop', {'category': 'Jeans & Jorts'}) }}">Denim & Jorts</a></li>
+                    <li><a href="{{ path('app_shop', {'category': 'Headwear'}) }}">Caps & Beanies</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <h4>STAY UPDATED</h4>
+                <p>Subscribe for exclusive drops, archive sales, and private discount codes.</p>
+                <form class="footer-form" onsubmit="event.preventDefault(); alert('Subscribed to 2THSND4 VIP list!');">
+                    <input type="email" placeholder="Enter your email" required>
+                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <p>&copy; {{ "now"|date("Y") }} 2THSND4 Streetwear Co. All rights reserved. Built with Symfony 7 &amp; Docker.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- LOGOUT MODAL -->
+    <div class="modal-overlay" id="logoutModal">
+        <div class="modal-box">
+            <div style="font-size: 40px; color: #ff4d5a; margin-bottom: 15px;"><i class="fas fa-sign-out-alt"></i></div>
+            <h3>Confirm Logout</h3>
+            <p>Are you sure you want to end your session on 2THSND4?</p>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">Cancel</button>
+                <a href="{{ path('app_logout') }}" class="modal-btn modal-btn-danger">Yes, Log Out</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="{{ asset('script.js') }}"></script>
+    <script>
+        // Modal handlers
+        function openLogoutModal(e) {
+            if (e) e.preventDefault();
+            document.getElementById('logoutModal').style.display = 'flex';
+        }
+        function closeLogoutModal() {
+            document.getElementById('logoutModal').style.display = 'none';
+        }
+
+        // Dropdown toggle
+        const menuToggle = document.getElementById('menuToggle');
+        const dropdownMenu = document.getElementById('dropdownMenu');
+        if (menuToggle && dropdownMenu) {
+            menuToggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                dropdownMenu.classList.toggle('active');
+            });
+            document.addEventListener('click', function(e) {
+                if (!dropdownMenu.contains(e.target) && !menuToggle.contains(e.target)) {
+                    dropdownMenu.classList.remove('active');
+                }
+            });
+        }
+    </script>
+    {% block javascripts %}{% endblock %}
+</body>
 </html>

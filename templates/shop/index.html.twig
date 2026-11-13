@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}2THSND4 - Shop Collection{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .category-pills {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 25px 0 35px;
+    }
+    .cat-pill {
+        padding: 8px 20px;
+        border-radius: 50px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.12);
+        color: #aaa;
+        text-decoration: none;
+        font-size: 13px;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        transition: all 0.3s;
+    }
+    .cat-pill:hover, .cat-pill.active {
+        background: #fff;
+        color: #000;
+        border-color: #fff;
+        font-weight: 600;
+    }
+    .stock-badge-tag {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        font-size: 10px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-weight: 700;
+        z-index: 2;
+    }
+    .stock-in { background: rgba(40, 167, 69, 0.85); color: #fff; }
+    .stock-low { background: rgba(255, 193, 7, 0.9); color: #000; }
+    .stock-out { background: rgba(220, 53, 69, 0.85); color: #fff; }
+
+    .card-footer-action {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        margin-top: 12px;
+    }
+    .size-select {
+        padding: 8px 12px;
+        border-radius: 20px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: #fff;
+        font-size: 12px;
+    }
+    .size-select option {
+        background: #111;
+        color: #fff;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="shop-page">
+    <div class="container">
+        <div class="shop-header">
+            <h1>OUR COLLECTION</h1>
+            {% if search %}
+                <p>Showing search results for: <strong>"{{ search }}"</strong> <a href="{{ path('app_shop') }}" style="color: #ff4d5a; margin-left: 10px; font-size: 12px;"><i class="fas fa-times-circle"></i> Clear</a></p>
+            {% else %}
+                <div class="shop-header-image">
+                    <img src="{{ asset('images/fashion.png') }}" alt="Discover our fashion pieces">
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- CATEGORY FILTER PILLS -->
+        <div class="category-pills">
+            <a href="{{ path('app_shop') }}" class="cat-pill {{ currentCategory is empty ? 'active' : '' }}">All Items</a>
+            <a href="{{ path('app_shop', {'category': 'T-Shirts'}) }}" class="cat-pill {{ currentCategory == 'T-Shirts' ? 'active' : '' }}">T-Shirts</a>
+            <a href="{{ path('app_shop', {'category': 'Hoodies'}) }}" class="cat-pill {{ currentCategory == 'Hoodies' ? 'active' : '' }}">Hoodies</a>
+            <a href="{{ path('app_shop', {'category': 'Jeans & Jorts'}) }}" class="cat-pill {{ currentCategory == 'Jeans & Jorts' ? 'active' : '' }}">Jeans & Jorts</a>
+            <a href="{{ path('app_shop', {'category': 'Headwear'}) }}" class="cat-pill {{ currentCategory == 'Headwear' ? 'active' : '' }}">Headwear</a>
+            <a href="{{ path('app_shop', {'category': 'Streetwear'}) }}" class="cat-pill {{ currentCategory == 'Streetwear' ? 'active' : '' }}">Streetwear</a>
+        </div>
+
+        <!-- PRODUCT GRID -->
+        <div class="shop-grid">
+            {% for product in products %}
+                <div class="product-card" style="position: relative;">
+                    {% if product.isOutOfStock %}
+                        <span class="stock-badge-tag stock-out">Out of Stock</span>
+                    {% elseif product.isLowStock %}
+                        <span class="stock-badge-tag stock-low">Only {{ product.stock }} Left</span>
+                    {% else %}
+                        <span class="stock-badge-tag stock-in">In Stock</span>
+                    {% endif %}
+
+                    <div class="product-image">
+                        <a href="{{ path('app_product_detail', {'id': product.id}) }}">
+                            <img src="{{ asset('images/' ~ product.image) }}" alt="{{ product.name }}">
+                        </a>
+                    </div>
+
+                    <div style="font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">{{ product.category }}</div>
+                    <h3><a href="{{ path('app_product_detail', {'id': product.id}) }}" style="color: #fff; text-decoration: none;">{{ product.name }}</a></h3>
+                    <p class="price">{{ product.formattedPrice }}</p>
+
+                    {% if product.isOutOfStock %}
+                        <button class="btn btn-secondary" disabled style="opacity: 0.5; cursor: not-allowed; width: 100%; border-radius: 50px; padding: 10px;">Sold Out</button>
+                    {% else %}
+                        <form action="{{ path('app_cart_add', {'id': product.id}) }}" method="POST" class="card-footer-action">
+                            <select name="size" class="size-select">
+                                {% for size in product.sizesArray %}
+                                    <option value="{{ size }}">{{ size }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="hidden" name="quantity" value="1">
+                            <button type="submit" class="btn btn-add" style="flex: 1;">Add to Cart</button>
+                        </form>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="no-results" style="grid-column: 1 / -1; text-align: center; padding: 60px 20px;">
+                    <i class="fas fa-search" style="font-size: 40px; color: #555; margin-bottom: 15px;"></i>
+                    <p>No products found matching your search.</p>
+                    <a href="{{ path('app_shop') }}" class="btn btn-primary" style="margin-top: 15px; display: inline-block;">View All Collections</a>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="coming-soon-container">
+            <p class="coming-soon-text">More exclusive drops coming soon...</p>
+        </div>
+    </div>
+</section>
+{% endblock %}

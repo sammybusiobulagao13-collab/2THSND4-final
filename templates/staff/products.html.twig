@@ -1,0 +1,265 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}2THSND4 - Staff Portal (Products){% endblock %}
+
+{% block stylesheets %}
+<style>
+    .staff-container {
+        padding: 40px 0 100px;
+        min-height: 85vh;
+        background-image: url('{{ asset('images/texture.jpg') }}');
+        background-size: cover;
+    }
+    .staff-card {
+        background: rgba(10, 10, 26, 0.9);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 14px;
+        padding: 30px;
+        backdrop-filter: blur(8px);
+    }
+    .staff-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+    .staff-title h1 {
+        font-family: var(--font-primary);
+        color: #fff;
+        font-size: 26px;
+        letter-spacing: 1.5px;
+        margin-bottom: 5px;
+    }
+    .staff-filter-tabs {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 25px;
+    }
+    .staff-tab {
+        padding: 8px 20px;
+        border-radius: 50px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #aaa;
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .staff-tab.active, .staff-tab:hover {
+        background: #17a2b8;
+        color: #fff;
+        border-color: #17a2b8;
+    }
+    .staff-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 14px;
+    }
+    .staff-table th, .staff-table td {
+        padding: 14px 16px;
+        text-align: left;
+        border-bottom: 1px solid rgba(255,255,255,0.06);
+        color: #ddd;
+    }
+    .staff-table th {
+        color: #888;
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+    .owner-badge-you {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: bold;
+        background: rgba(40, 167, 69, 0.15);
+        color: #5dd879;
+        border: 1px solid rgba(40, 167, 69, 0.3);
+    }
+    .owner-badge-other {
+        display: inline-block;
+        padding: 3px 10px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 500;
+        background: rgba(255, 255, 255, 0.05);
+        color: #888;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .btn-action-edit {
+        color: #ffd659;
+        text-decoration: none;
+        padding: 6px 14px;
+        border-radius: 6px;
+        background: rgba(255, 193, 7, 0.1);
+        border: 1px solid rgba(255, 193, 7, 0.3);
+        font-size: 12px;
+        font-weight: bold;
+        margin-right: 8px;
+        transition: all 0.2s;
+    }
+    .btn-action-edit:hover { background: #ffd659; color: #000; }
+    .btn-action-delete {
+        color: #ff6b7b;
+        background: rgba(220, 53, 69, 0.1);
+        border: 1px solid rgba(220, 53, 69, 0.3);
+        padding: 6px 14px;
+        border-radius: 6px;
+        font-size: 12px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .btn-action-delete:hover { background: #dc3545; color: #fff; }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="staff-container">
+    <div class="container">
+        <div class="staff-card">
+            <div class="staff-header">
+                <div class="staff-title">
+                    <h1>STAFF PRODUCT CATALOG</h1>
+                    <p style="color: #888; font-size: 14px;">Logged in as: <strong style="color: #17a2b8;">{{ app.user.name }}</strong> (Staff)</p>
+                </div>
+
+                <div style="display: flex; gap: 12px;">
+                    <a href="{{ path('app_staff_product_new') }}" class="btn btn-primary" style="padding: 10px 22px; border-radius: 50px; font-size: 13px; font-weight: bold;">
+                        <i class="fas fa-plus-circle"></i> ADD NEW PRODUCT
+                    </a>
+                </div>
+            </div>
+
+            <!-- Rubrics Reminder Banner -->
+            <div style="background: rgba(23, 162, 184, 0.08); border: 1px solid rgba(23, 162, 184, 0.25); border-radius: 8px; padding: 12px 18px; margin-bottom: 25px; font-size: 13px; color: #bbb;">
+                <i class="fas fa-info-circle" style="color: #17a2b8; margin-right: 8px;"></i>
+                <strong>Rubric Permissions Check:</strong> As a staff member, you can create new products and <strong>edit/delete your own records</strong>. Admin and other staff products are viewable as shared records, but cannot be modified.
+            </div>
+
+            <!-- Filter tabs -->
+            <div class="staff-filter-tabs">
+                <a href="{{ path('app_staff_products') }}" class="staff-tab {{ currentFilter == 'all' ? 'active' : '' }}">
+                    <i class="fas fa-globe"></i> All Products
+                </a>
+                <a href="{{ path('app_staff_products', {'filter': 'my'}) }}" class="staff-tab {{ currentFilter == 'my' ? 'active' : '' }}">
+                    <i class="fas fa-user-check"></i> My Created Records Only
+                </a>
+            </div>
+
+            <!-- Table -->
+            <div style="overflow-x: auto;">
+                <table class="staff-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Created By / Ownership</th>
+                            <th>Action Rights</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in products %}
+                            {% set isOwner = product.createdBy == app.user %}
+                            <tr>
+                                <td style="display: flex; align-items: center; gap: 12px;">
+                                    <img src="{{ asset('images/' ~ product.image) }}" alt="{{ product.name }}" style="width: 45px; height: 45px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.05);">
+                                    <div>
+                                        <strong style="color: #fff;">{{ product.name }}</strong>
+                                        <div style="font-size: 11px; color: #888;">Sizes: {{ product.sizes }}</div>
+                                    </div>
+                                </td>
+                                <td>{{ product.category }}</td>
+                                <td style="color: #fff; font-weight: 600;">{{ product.formattedPrice }}</td>
+                                <td>
+                                    {% if product.isOutOfStock %}
+                                        <span style="color: #ff6b7b; font-weight: bold;">0 (Sold Out)</span>
+                                    {% elseif product.isLowStock %}
+                                        <span style="color: #ffd659; font-weight: bold;">{{ product.stock }} (Low Stock)</span>
+                                    {% else %}
+                                        <span style="color: #5dd879; font-weight: bold;">{{ product.stock }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if isOwner %}
+                                        <span class="owner-badge-you"><i class="fas fa-check"></i> You (Staff Record)</span>
+                                    {% else %}
+                                        <span class="owner-badge-other"><i class="fas fa-user"></i> {{ product.createdBy.name }} ({{ product.createdBy.primaryRoleLabel }})</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if isOwner %}
+                                        <a href="{{ path('app_staff_product_edit', {'id': product.id}) }}" class="btn-action-edit">
+                                            <i class="fas fa-edit"></i> Edit
+                                        </a>
+
+                                        <button type="button" class="btn-action-delete" onclick="confirmStaffDelete('{{ product.id }}', '{{ product.name|e('js') }}')">
+                                            <i class="fas fa-trash"></i> Delete
+                                        </button>
+
+                                        <form id="delete-form-{{ product.id }}" action="{{ path('app_staff_product_delete', {'id': product.id}) }}" method="POST" style="display: none;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_product_' ~ product.id) }}">
+                                        </form>
+                                    {% else %}
+                                        <span style="color: #666; font-size: 12px; font-style: italic;">
+                                            <i class="fas fa-lock" style="font-size: 11px; margin-right: 4px;"></i> Read-only
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="6" style="text-align: center; padding: 40px; color: #888;">
+                                    No products found matching the criteria.
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- DELETE CONFIRMATION MODAL -->
+<div class="modal-overlay" id="staffDeleteModal">
+    <div class="modal-box">
+        <div style="font-size: 40px; color: #ff6b7b; margin-bottom: 15px;"><i class="fas fa-exclamation-triangle"></i></div>
+        <h3>Confirm Product Deletion</h3>
+        <p>Are you sure you want to delete <strong id="deleteProductName" style="color: #fff;"></strong>? This action cannot be undone.</p>
+        <div class="modal-actions">
+            <button class="modal-btn modal-btn-cancel" onclick="closeStaffDeleteModal()">Cancel</button>
+            <button class="modal-btn modal-btn-danger" id="confirmDeleteSubmitBtn">Yes, Delete Product</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    let activeDeleteFormId = null;
+
+    function confirmStaffDelete(productId, productName) {
+        activeDeleteFormId = 'delete-form-' + productId;
+        document.getElementById('deleteProductName').textContent = productName;
+        document.getElementById('staffDeleteModal').style.display = 'flex';
+    }
+
+    function closeStaffDeleteModal() {
+        document.getElementById('staffDeleteModal').style.display = 'none';
+        activeDeleteFormId = null;
+    }
+
+    document.getElementById('confirmDeleteSubmitBtn').addEventListener('click', function() {
+        if (activeDeleteFormId) {
+            document.getElementById(activeDeleteFormId).submit();
+        }
+    });
+</script>
+{% endblock %}

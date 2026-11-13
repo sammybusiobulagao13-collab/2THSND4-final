@@ -1,0 +1,138 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}2THSND4 - Shopping Cart{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .cart-summary-box {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 12px;
+        padding: 25px 30px;
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+    .qty-control {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .qty-input-modern {
+        width: 60px;
+        padding: 6px 10px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.2);
+        border-radius: 6px;
+        color: #fff;
+        text-align: center;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="cart-page">
+    <div class="container">
+        <div class="cart-header">
+            <h1>YOUR CART</h1>
+            <p>Review your streetwear selections before checkout</p>
+        </div>
+
+        {% if cart|length > 0 %}
+            <div class="cart-table-wrapper">
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th>Size</th>
+                            <th>Price</th>
+                            <th>Quantity</th>
+                            <th>Subtotal</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in cart %}
+                            <tr>
+                                <td class="cart-product">
+                                    <img src="{{ asset('images/' ~ item.image) }}" alt="{{ item.name }}" style="width: 55px; height: 55px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.05); margin-right: 15px;">
+                                    <div>
+                                        <a href="{{ path('app_product_detail', {'id': item.id}) }}" style="color: #fff; text-decoration: none; font-weight: 600;">{{ item.name }}</a>
+                                        <div style="font-size: 11px; color: #888; margin-top: 3px;">Stock remaining: {{ item.stock }}</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span style="display: inline-block; padding: 4px 10px; border-radius: 6px; background: rgba(255,255,255,0.08); font-weight: bold; font-size: 12px; color: #fff;">{{ item.size }}</span>
+                                </td>
+                                <td class="cart-price">₱{{ item.price|number_format(2) }}</td>
+                                <td class="cart-quantity">
+                                    <form action="{{ path('app_cart_update') }}" method="POST" class="qty-control">
+                                        <input type="hidden" name="product_id" value="{{ item.id }}">
+                                        <input type="hidden" name="size" value="{{ item.size }}">
+                                        <input type="number" name="quantity" value="{{ item.quantity }}" min="1" max="{{ item.stock }}" class="qty-input-modern" onchange="this.form.submit()">
+                                        <button type="submit" title="Update" style="background: none; border: none; color: #aaa; cursor: pointer;"><i class="fas fa-sync-alt"></i></button>
+                                    </form>
+                                </td>
+                                <td class="cart-total item-total" style="color: #5dd879; font-weight: bold;">₱{{ item.subtotal|number_format(2) }}</td>
+                                <td class="cart-remove">
+                                    <a href="{{ path('app_cart_remove', {'id': item.id, 'size': item.size}) }}" class="remove-btn" title="Remove Item" onclick="return confirm('Remove {{ item.name }} from cart?');" style="color: #ff4d5a; font-size: 18px;">
+                                        <i class="fas fa-trash-alt"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; flex-wrap: wrap; gap: 15px;">
+                <a href="{{ path('app_shop') }}" class="btn btn-secondary" style="border: 1px solid rgba(255,255,255,0.2); border-radius: 50px; padding: 10px 24px; color: #fff; text-decoration: none;">
+                    <i class="fas fa-arrow-left"></i> Continue Shopping
+                </a>
+
+                <form action="{{ path('app_cart_clear') }}" method="POST" onsubmit="return confirm('Are you sure you want to empty your entire cart?');">
+                    <input type="hidden" name="_token" value="{{ csrf_token('clear_cart') }}">
+                    <button type="submit" class="btn btn-danger" style="background: transparent; border: 1px solid rgba(220, 53, 69, 0.4); color: #ff6b7b; border-radius: 50px; padding: 10px 24px; cursor: pointer;">
+                        <i class="fas fa-trash"></i> Clear Cart
+                    </button>
+                </form>
+            </div>
+
+            <div class="cart-summary-box">
+                <div>
+                    <div style="color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Standard Delivery</div>
+                    <div style="color: #5dd879; font-weight: bold; font-size: 14px; margin-top: 4px;"><i class="fas fa-check-circle"></i> FREE Shipping Nationwide</div>
+                </div>
+
+                <div style="text-align: right;">
+                    <div style="color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: 1px;">Total Amount</div>
+                    <div style="font-size: 32px; font-weight: 700; color: #fff; margin-top: 4px;">₱{{ total|number_format(2) }}</div>
+                </div>
+
+                <div>
+                    {% if app.user %}
+                        <a href="{{ path('app_checkout') }}" class="btn btn-primary" style="padding: 14px 35px; border-radius: 50px; text-decoration: none; font-weight: bold; letter-spacing: 1.5px;">
+                            PROCEED TO CHECKOUT <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                        </a>
+                    {% else %}
+                        <a href="{{ path('app_login') }}" class="btn btn-primary" style="padding: 14px 35px; border-radius: 50px; text-decoration: none; font-weight: bold; letter-spacing: 1.5px;">
+                            LOG IN TO CHECKOUT <i class="fas fa-arrow-right" style="margin-left: 8px;"></i>
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+        {% else %}
+            <div style="text-align: center; padding: 80px 20px; background: rgba(255,255,255,0.02); border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); margin-top: 20px;">
+                <div style="font-size: 60px; color: #444; margin-bottom: 20px;"><i class="fas fa-shopping-bag"></i></div>
+                <h3 style="color: #fff; font-size: 22px; margin-bottom: 10px;">Your cart is empty</h3>
+                <p style="color: #888; max-width: 400px; margin: 0 auto 30px;">Looks like you haven't added any pieces to your cart yet. Explore our latest drops and elevate your fit.</p>
+                <a href="{{ path('app_shop') }}" class="btn btn-primary" style="padding: 12px 32px; border-radius: 50px; text-decoration: none;">EXPLORE THE SHOP</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

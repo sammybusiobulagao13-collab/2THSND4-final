@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}2THSND4 - Secure Checkout{% endblock %}
+
+{% block body %}
+<section class="checkout-page">
+    <div class="container">
+        <div class="checkout-header">
+            <h1>CHECKOUT</h1>
+            <p>Review your streetwear order and confirm delivery destination</p>
+        </div>
+
+        <div class="checkout-grid">
+            <!-- ORDER SUMMARY -->
+            <div class="checkout-summary">
+                <h2>Order Summary</h2>
+                {% for item in cart %}
+                    <div class="checkout-item">
+                        <img src="{{ asset('images/' ~ item.image) }}" alt="{{ item.name }}">
+                        <div class="checkout-item-details">
+                            <h4>{{ item.name }}</h4>
+                            <p>Size: <strong style="color: #fff;">{{ item.size }}</strong> &bull; ₱{{ item.price|number_format(2) }} &times; {{ item.quantity }}</p>
+                        </div>
+                        <span class="checkout-item-total">₱{{ item.subtotal|number_format(2) }}</span>
+                    </div>
+                {% endfor %}
+
+                <div class="checkout-total">
+                    <div class="checkout-total-row">
+                        <span>Subtotal:</span>
+                        <span>₱{{ total|number_format(2) }}</span>
+                    </div>
+                    <div class="checkout-total-row">
+                        <span>Shipping:</span>
+                        <span style="color: #5dd879; font-weight: bold;">FREE Nationwide</span>
+                    </div>
+                    <div class="checkout-total-row grand-total">
+                        <span>Total:</span>
+                        <span>₱{{ total|number_format(2) }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SHIPPING & PAYMENT FORM -->
+            <div class="checkout-details">
+                <h2>Shipping &amp; Delivery</h2>
+
+                <!-- Logged in Customer info -->
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 10px; padding: 15px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
+                    <div style="width: 40px; height: 40px; border-radius: 50%; background: #fff; color: #000; font-weight: bold; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                        {{ app.user.name|slice(0, 1)|upper }}
+                    </div>
+                    <div>
+                        <div style="font-weight: 600; color: #fff;">{{ app.user.name }}</div>
+                        <div style="font-size: 12px; color: #888;">{{ app.user.email }}</div>
+                    </div>
+                </div>
+
+                {{ form_start(checkoutForm, {'attr': {'class': 'checkout-form'}}) }}
+
+                    <div class="form-group" style="margin-bottom: 18px;">
+                        {{ form_label(checkoutForm.shippingAddress, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                        {{ form_widget(checkoutForm.shippingAddress, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 14px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
+                        <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(checkoutForm.shippingAddress) }}</div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 18px;">
+                        <div>
+                            {{ form_label(checkoutForm.city, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                            {{ form_widget(checkoutForm.city, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 14px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
+                            <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(checkoutForm.city) }}</div>
+                        </div>
+                        <div>
+                            {{ form_label(checkoutForm.zipCode, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                            {{ form_widget(checkoutForm.zipCode, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 14px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
+                            <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(checkoutForm.zipCode) }}</div>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        {{ form_label(checkoutForm.phone, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                        {{ form_widget(checkoutForm.phone, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 14px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
+                        <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(checkoutForm.phone) }}</div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        {{ form_label(checkoutForm.deliveryOption, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                        {{ form_widget(checkoutForm.deliveryOption, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 14px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; cursor: pointer;'}}) }}
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 30px;">
+                        <label style="color:#aaa; font-size:13px; display:block; margin-bottom:8px;">Payment Method</label>
+                        <div style="width:100%; padding:14px 18px; border:1px solid rgba(255,193,7,0.3); border-radius:8px; background:rgba(255,193,7,0.08); color:#ffc107; font-size:15px; display:flex; align-items:center; gap:10px;">
+                            <i class="fas fa-money-bill-wave" style="font-size:18px;"></i>
+                            <span>Cash on Delivery (COD) &bull; Pay when your order arrives</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 16px; border-radius: 50px; font-weight: bold; letter-spacing: 2px;">
+                        PLACE ORDER NOW (₱{{ total|number_format(2) }})
+                    </button>
+
+                {{ form_end(checkoutForm) }}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

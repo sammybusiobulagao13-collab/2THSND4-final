@@ -1,0 +1,164 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}2THSND4 - {{ product.name }}{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .product-detail-section {
+        padding: 60px 0 100px;
+        min-height: 80vh;
+        background-image: url('{{ asset('images/texture.jpg') }}');
+        background-size: cover;
+    }
+    .detail-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 50px;
+        align-items: center;
+        background: rgba(10, 10, 26, 0.85);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 16px;
+        padding: 40px;
+        backdrop-filter: blur(8px);
+    }
+    .detail-image-box {
+        text-align: center;
+        background: rgba(255,255,255,0.02);
+        border-radius: 12px;
+        padding: 30px;
+        border: 1px solid rgba(255,255,255,0.05);
+    }
+    .detail-image-box img {
+        max-width: 100%;
+        max-height: 480px;
+        object-fit: contain;
+        transition: transform 0.4s ease;
+    }
+    .detail-image-box:hover img {
+        transform: scale(1.03);
+    }
+    .detail-info h1 {
+        font-family: var(--font-primary);
+        font-size: 32px;
+        color: #fff;
+        margin-bottom: 12px;
+        letter-spacing: 1.5px;
+    }
+    .detail-price {
+        font-size: 28px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 20px;
+    }
+    .detail-stock {
+        display: inline-block;
+        padding: 5px 14px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 25px;
+    }
+    .size-option-label {
+        display: inline-block;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        cursor: pointer;
+    }
+    .size-option-label input { display: none; }
+    .size-pill {
+        display: inline-block;
+        padding: 10px 18px;
+        border-radius: 8px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: #fff;
+        font-weight: 600;
+        transition: all 0.2s;
+    }
+    .size-option-label input:checked + .size-pill {
+        background: #fff;
+        color: #000;
+        border-color: #fff;
+    }
+    @media (max-width: 800px) {
+        .detail-grid { grid-template-columns: 1fr; gap: 30px; padding: 25px; }
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="product-detail-section">
+    <div class="container">
+        <div style="margin-bottom: 20px;">
+            <a href="{{ path('app_shop') }}" style="color: #888; text-decoration: none; font-size: 14px;">
+                <i class="fas fa-arrow-left"></i> Back to Catalog
+            </a>
+        </div>
+
+        <div class="detail-grid">
+            <div class="detail-image-box">
+                <img src="{{ asset('images/' ~ product.image) }}" alt="{{ product.name }}">
+            </div>
+
+            <div class="detail-info">
+                <div style="color: #ff4d5a; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;">
+                    {{ product.category }}
+                </div>
+                <h1>{{ product.name }}</h1>
+                <div class="detail-price">{{ product.formattedPrice }}</div>
+
+                {% if product.isOutOfStock %}
+                    <div class="detail-stock" style="background: rgba(220, 53, 69, 0.2); color: #ff6b7b; border: 1px solid #dc3545;">
+                        <i class="fas fa-times-circle"></i> Out of Stock
+                    </div>
+                {% elseif product.isLowStock %}
+                    <div class="detail-stock" style="background: rgba(255, 193, 7, 0.2); color: #ffd659; border: 1px solid #ffc107;">
+                        <i class="fas fa-exclamation-triangle"></i> Low Stock - Only {{ product.stock }} items left!
+                    </div>
+                {% else %}
+                    <div class="detail-stock" style="background: rgba(40, 167, 69, 0.2); color: #5dd879; border: 1px solid #28a745;">
+                        <i class="fas fa-check-circle"></i> In Stock ({{ product.stock }} available)
+                    </div>
+                {% endif %}
+
+                <p style="color: #aaa; font-size: 15px; line-height: 1.7; margin-bottom: 30px;">
+                    {{ product.description|default('Heavyweight premium streetwear piece with distinct 2THSND4 signature silhouette and quality construction.') }}
+                </p>
+
+                {% if not product.isOutOfStock %}
+                    <form action="{{ path('app_cart_add', {'id': product.id}) }}" method="POST">
+                        <div style="margin-bottom: 25px;">
+                            <label style="display:block; color: #888; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Select Size</label>
+                            <div>
+                                {% for size in product.sizesArray %}
+                                    <label class="size-option-label">
+                                        <input type="radio" name="size" value="{{ size }}" {{ loop.first ? 'checked' : '' }}>
+                                        <span class="size-pill">{{ size }}</span>
+                                    </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 30px;">
+                            <label style="color: #888; font-size: 13px;">Qty:</label>
+                            <input type="number" name="quantity" value="1" min="1" max="{{ product.stock }}" style="width: 80px; padding: 10px 14px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 8px; color: #fff; text-align: center;">
+                            <button type="submit" class="btn btn-primary" style="flex: 1; padding: 14px 28px; border-radius: 50px;">
+                                <i class="fas fa-shopping-cart"></i> ADD TO CART
+                            </button>
+                        </div>
+                    </form>
+                {% else %}
+                    <button class="btn btn-secondary" disabled style="width: 100%; padding: 14px; border-radius: 50px; opacity: 0.5;">Currently Unavailable</button>
+                {% endif %}
+
+                <div style="border-top: 1px solid rgba(255,255,255,0.08); padding-top: 20px; font-size: 13px; color: #777;">
+                    <div><i class="fas fa-shield-alt" style="color: #aaa; margin-right: 8px;"></i> 100% Authentic 2THSND4 Original</div>
+                    <div style="margin-top: 8px;"><i class="fas fa-truck" style="color: #aaa; margin-right: 8px;"></i> Nationwide delivery across the Philippines</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

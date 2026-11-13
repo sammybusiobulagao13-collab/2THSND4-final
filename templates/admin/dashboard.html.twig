@@ -1,0 +1,151 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}2THSND4 - Admin Dashboard{% endblock %}
+
+{% block admin_body %}
+    <div style="margin-bottom: 25px;">
+        <h1 style="font-family: var(--font-primary); font-size: 26px; color: #fff; letter-spacing: 1.5px;">SYSTEM DASHBOARD</h1>
+        <p style="color: #888; font-size: 14px;">Real-time overview of users, inventory records, and order operations.</p>
+    </div>
+
+    <!-- Mandatory Rubric Counters: Total Users, Total Staff, Total Records -->
+    <div class="stats-grid">
+        <div class="stat-card" style="border-left: 4px solid #17a2b8;">
+            <div class="stat-icon" style="color: #17a2b8;"><i class="fas fa-users"></i></div>
+            <div class="stat-number">{{ totalUsers }}</div>
+            <div class="stat-label">Total Users</div>
+            <div style="font-size: 12px; color: #777; margin-top: 6px;">
+                {{ totalCustomers }} Customers &bull; {{ totalAdmins }} Admins
+            </div>
+        </div>
+
+        <div class="stat-card" style="border-left: 4px solid #ffd659;">
+            <div class="stat-icon" style="color: #ffd659;"><i class="fas fa-id-badge"></i></div>
+            <div class="stat-number">{{ totalStaff }}</div>
+            <div class="stat-label">Total Staff</div>
+            <div style="font-size: 12px; color: #777; margin-top: 6px;">
+                Active Staff Specialists
+            </div>
+        </div>
+
+        <div class="stat-card" style="border-left: 4px solid #5dd879;">
+            <div class="stat-icon" style="color: #5dd879;"><i class="fas fa-database"></i></div>
+            <div class="stat-number">{{ totalRecords }}</div>
+            <div class="stat-label">Total System Records</div>
+            <div style="font-size: 12px; color: #777; margin-top: 6px;">
+                {{ totalProducts }} Products &bull; {{ totalOrders }} Orders &bull; {{ totalMessages }} Inquiries
+            </div>
+        </div>
+
+        <div class="stat-card" style="border-left: 4px solid #ff4d5a;">
+            <div class="stat-icon" style="color: #ff4d5a;"><i class="fas fa-money-bill-wave"></i></div>
+            <div class="stat-number">₱{{ revenue|number_format(2) }}</div>
+            <div class="stat-label">Gross Revenue</div>
+            <div style="font-size: 12px; color: #777; margin-top: 6px;">
+                From Completed &amp; Active Orders
+            </div>
+        </div>
+    </div>
+
+    <!-- Secondary Operational Metrics -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px;">
+        <div style="background: rgba(255, 193, 7, 0.08); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 10px; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <div style="font-size: 22px; font-weight: bold; color: #ffd659;">{{ lowStock }}</div>
+                <div style="color: #aaa; font-size: 12px; text-transform: uppercase;">Low Stock Warnings</div>
+            </div>
+            <i class="fas fa-exclamation-triangle" style="font-size: 24px; color: #ffd659;"></i>
+        </div>
+
+        <div style="background: rgba(220, 53, 69, 0.08); border: 1px solid rgba(220, 53, 69, 0.2); border-radius: 10px; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <div style="font-size: 22px; font-weight: bold; color: #ff6b7b;">{{ outOfStock }}</div>
+                <div style="color: #aaa; font-size: 12px; text-transform: uppercase;">Sold Out Items</div>
+            </div>
+            <i class="fas fa-times-circle" style="font-size: 24px; color: #ff6b7b;"></i>
+        </div>
+
+        <div style="background: rgba(23, 162, 184, 0.08); border: 1px solid rgba(23, 162, 184, 0.2); border-radius: 10px; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <div style="font-size: 22px; font-weight: bold; color: #5bc0de;">{{ processingOrders }}</div>
+                <div style="color: #aaa; font-size: 12px; text-transform: uppercase;">Orders In Processing</div>
+            </div>
+            <i class="fas fa-clock" style="font-size: 24px; color: #5bc0de;"></i>
+        </div>
+
+        <div style="background: rgba(40, 167, 69, 0.08); border: 1px solid rgba(40, 167, 69, 0.2); border-radius: 10px; padding: 15px 20px; display: flex; align-items: center; justify-content: space-between;">
+            <div>
+                <div style="font-size: 22px; font-weight: bold; color: #5dd879;">{{ unreadMessages }}</div>
+                <div style="color: #aaa; font-size: 12px; text-transform: uppercase;">Unread Inquiries</div>
+            </div>
+            <i class="fas fa-envelope-open-text" style="font-size: 24px; color: #5dd879;"></i>
+        </div>
+    </div>
+
+    <!-- Quick Action Toolbar -->
+    <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 18px 25px; margin-bottom: 30px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;">
+        <div style="font-weight: 600; color: #fff; font-size: 14px;">
+            <i class="fas fa-bolt" style="color: #ffd659; margin-right: 8px;"></i> Quick Administration Actions:
+        </div>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="{{ path('app_admin_user_new') }}" class="btn-sm-action btn-sm-toggle" style="padding: 8px 16px;">
+                <i class="fas fa-user-plus"></i> Create New User/Staff
+            </a>
+            <a href="{{ path('app_admin_product_new') }}" class="btn-sm-action btn-sm-edit" style="padding: 8px 16px;">
+                <i class="fas fa-plus"></i> Add New Product
+            </a>
+            <a href="{{ path('app_admin_orders') }}" class="btn-sm-action" style="padding: 8px 16px; background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.2);">
+                <i class="fas fa-boxes"></i> Review Orders
+            </a>
+        </div>
+    </div>
+
+    <!-- Recent Orders Table -->
+    <div class="admin-table-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h3 style="color: #fff; font-size: 18px; font-family: var(--font-primary);"><i class="fas fa-receipt" style="color: #17a2b8; margin-right: 8px;"></i> RECENT CUSTOMER ORDERS</h3>
+            <a href="{{ path('app_admin_orders') }}" style="color: #17a2b8; text-decoration: none; font-size: 13px; font-weight: bold;">
+                View All Orders <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer</th>
+                        <th>Status</th>
+                        <th>Courier</th>
+                        <th>Total</th>
+                        <th>Placed At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in recentOrders %}
+                        <tr>
+                            <td><strong style="color: #fff;">#{{ order.orderNumber }}</strong></td>
+                            <td>
+                                <div>{{ order.user.name }}</div>
+                                <div style="font-size: 12px; color: #888;">{{ order.user.email }}</div>
+                            </td>
+                            <td>
+                                {% set badgeColor = order.status == 'Delivered' ? '#5dd879' : (order.status == 'Cancelled' ? '#ff6b7b' : '#ffd659') %}
+                                <span style="display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; background: rgba(255,255,255,0.05); border: 1px solid {{ badgeColor }}; color: {{ badgeColor }};">
+                                    {{ order.status }}
+                                </span>
+                            </td>
+                            <td>{{ order.deliveryOption }}</td>
+                            <td style="color: #5dd879; font-weight: bold;">{{ order.formattedTotal }}</td>
+                            <td style="color: #888; font-size: 13px;">{{ order.createdAt|date('M d, Y g:i A') }}</td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 30px; color: #888;">No orders recorded in the system yet.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

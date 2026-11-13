@@ -1,0 +1,149 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}2THSND4 - User & Staff Management{% endblock %}
+
+{% block admin_body %}
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
+        <div>
+            <h1 style="font-family: var(--font-primary); font-size: 26px; color: #fff; letter-spacing: 1.5px;">STAFF &amp; USER MANAGEMENT</h1>
+            <p style="color: #888; font-size: 14px;">Manage accounts, assign roles (Admin, Staff, Customer), and control account activation status.</p>
+        </div>
+
+        <div>
+            <a href="{{ path('app_admin_user_new') }}" class="btn-sm-action btn-sm-toggle" style="padding: 10px 20px; font-size: 13px; border-radius: 50px;">
+                <i class="fas fa-user-plus"></i> CREATE NEW ACCOUNT
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistics bar -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px;">
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 15px; text-align: center;">
+            <div style="font-size: 26px; font-weight: bold; color: #fff;">{{ totalUsers }}</div>
+            <div style="color: #888; font-size: 12px; text-transform: uppercase;">Total Users</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 15px; text-align: center;">
+            <div style="font-size: 26px; font-weight: bold; color: #17a2b8;">{{ totalStaff }}</div>
+            <div style="color: #888; font-size: 12px; text-transform: uppercase;">Staff Specialists</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 15px; text-align: center;">
+            <div style="font-size: 26px; font-weight: bold; color: #ff4d5a;">{{ totalAdmins }}</div>
+            <div style="color: #888; font-size: 12px; text-transform: uppercase;">Administrators</div>
+        </div>
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 15px; text-align: center;">
+            <div style="font-size: 26px; font-weight: bold; color: #5dd879;">{{ totalCustomers }}</div>
+            <div style="color: #888; font-size: 12px; text-transform: uppercase;">Customers</div>
+        </div>
+    </div>
+
+    <!-- Filters & Search -->
+    <div class="admin-table-card">
+        <form method="GET" action="{{ path('app_admin_users') }}" style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 250px;">
+                <input type="text" name="search" value="{{ search }}" placeholder="Search by name, email, or username..." style="width: 100%; padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;">
+            </div>
+
+            <div>
+                <select name="role" style="padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;">
+                    <option value="">All Roles</option>
+                    <option value="ROLE_ADMIN" {{ roleFilter == 'ROLE_ADMIN' ? 'selected' : '' }}>Admins</option>
+                    <option value="ROLE_STAFF" {{ roleFilter == 'ROLE_STAFF' ? 'selected' : '' }}>Staff</option>
+                    <option value="ROLE_USER" {{ roleFilter == 'ROLE_USER' ? 'selected' : '' }}>Customers</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-sm-action btn-sm-toggle" style="padding: 10px 18px; border-radius: 8px;">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+            {% if search or roleFilter %}
+                <a href="{{ path('app_admin_users') }}" class="btn-sm-action btn-sm-delete" style="padding: 10px 18px; border-radius: 8px;">
+                    Reset
+                </a>
+            {% endif %}
+        </form>
+
+        <div style="overflow-x: auto;">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>User Account</th>
+                        <th>Username</th>
+                        <th>Role Assigned</th>
+                        <th>Status</th>
+                        <th>Date Registered</th>
+                        <th>Administrative Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td style="display: flex; align-items: center; gap: 12px;">
+                                <div style="width: 38px; height: 38px; border-radius: 50%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff;">
+                                    {{ user.name|slice(0, 1)|upper }}
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: #fff;">{{ user.name }}</div>
+                                    <div style="font-size: 12px; color: #888;">{{ user.email }}</div>
+                                </div>
+                            </td>
+                            <td>{{ user.username }}</td>
+                            <td>
+                                {% if user.isAdmin %}
+                                    <span class="role-badge role-badge-admin"><i class="fas fa-crown"></i> Admin</span>
+                                {% elseif user.isStaff %}
+                                    <span class="role-badge role-badge-staff"><i class="fas fa-id-badge"></i> Staff</span>
+                                {% else %}
+                                    <span class="role-badge role-badge-user"><i class="fas fa-user"></i> Customer</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user.isActive %}
+                                    <span style="display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; background: rgba(40, 167, 69, 0.15); color: #5dd879; border: 1px solid rgba(40, 167, 69, 0.3);">
+                                        <i class="fas fa-check-circle"></i> Active
+                                    </span>
+                                {% else %}
+                                    <span style="display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; background: rgba(220, 53, 69, 0.15); color: #ff6b7b; border: 1px solid rgba(220, 53, 69, 0.3);">
+                                        <i class="fas fa-ban"></i> Disabled / Archived
+                                    </span>
+                                {% endif %}
+                            </td>
+                            <td style="color: #888; font-size: 13px;">{{ user.createdAt|date('M d, Y') }}</td>
+                            <td>
+                                <div style="display: flex; gap: 8px; align-items: center;">
+                                    <a href="{{ path('app_admin_user_edit', {'id': user.id}) }}" class="btn-sm-action btn-sm-edit" title="Edit User">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </a>
+
+                                    {% if user != app.user %}
+                                        <!-- Toggle Active/Disable status -->
+                                        <form action="{{ path('app_admin_user_toggle_status', {'id': user.id}) }}" method="POST" style="display: inline;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('toggle_user_' ~ user.id) }}">
+                                            <button type="submit" class="btn-sm-action {{ user.isActive ? 'btn-sm-delete' : 'btn-sm-toggle' }}" title="{{ user.isActive ? 'Disable / Archive Account' : 'Activate Account' }}">
+                                                <i class="fas {{ user.isActive ? 'fa-user-slash' : 'fa-user-check' }}"></i>
+                                                {{ user.isActive ? 'Disable' : 'Activate' }}
+                                            </button>
+                                        </form>
+
+                                        <!-- Delete with Confirmation Modal -->
+                                        <button type="button" class="btn-sm-action btn-sm-delete" onclick="openAdminConfirm('delete-user-form-{{ user.id }}', 'Delete User Account', 'Are you sure you want to permanently delete account {{ user.name|e('js') }} ({{ user.email|e('js') }})?');">
+                                            <i class="fas fa-trash-alt"></i> Delete
+                                        </button>
+                                        <form id="delete-user-form-{{ user.id }}" action="{{ path('app_admin_user_delete', {'id': user.id}) }}" method="POST" style="display: none;">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete_user_' ~ user.id) }}">
+                                        </form>
+                                    {% else %}
+                                        <span style="font-size: 11px; color: #888; font-style: italic;">(Current Account)</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: #888;">No users found matching the filter criteria.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

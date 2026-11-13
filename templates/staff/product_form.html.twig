@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}2THSND4 - Staff ({{ isEdit ? 'Edit Product' : 'Add Product' }}){% endblock %}
+
+{% block body %}
+<section class="login-page" style="min-height: 85vh; padding: 50px 0 100px;">
+    <div class="container">
+        <div class="login-wrapper" style="max-width: 650px;">
+            <div class="login-form-container" style="display: block;">
+                <div style="margin-bottom: 25px;">
+                    <a href="{{ path('app_staff_products') }}" style="color: #888; font-size: 13px; text-decoration: none;">
+                        <i class="fas fa-arrow-left"></i> Back to Staff Products
+                    </a>
+                    <h2 style="margin-top: 10px;">{{ isEdit ? 'EDIT PRODUCT' : 'NEW PRODUCT' }}</h2>
+                    <p style="color: #888; font-size: 13px;">{{ isEdit ? 'Update details for your streetwear record.' : 'Add a new streetwear piece to the catalog.' }}</p>
+                </div>
+
+                {{ form_start(productForm) }}
+
+                    <div class="form-group" style="margin-bottom: 18px;">
+                        {{ form_label(productForm.name, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                        {{ form_widget(productForm.name, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 13px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
+                        <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(productForm.name) }}</div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 18px;">
+                        <div>
+                            {{ form_label(productForm.price, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                            {{ form_widget(productForm.price, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 13px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
+                            <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(productForm.price) }}</div>
+                        </div>
+                        <div>
+                            {{ form_label(productForm.stock, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                            {{ form_widget(productForm.stock, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 13px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
+                            <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(productForm.stock) }}</div>
+                        </div>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 18px;">
+                        <div>
+                            {{ form_label(productForm.category, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                            {{ form_widget(productForm.category, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 13px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; cursor: pointer;'}}) }}
+                        </div>
+                        <div>
+                            {{ form_label(productForm.image, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                            {{ form_widget(productForm.image, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 13px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff; cursor: pointer;'}}) }}
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 18px;">
+                        {{ form_label(productForm.sizes, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                        {{ form_widget(productForm.sizes, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 13px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 25px;">
+                        {{ form_label(productForm.description, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                        {{ form_widget(productForm.description, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 13px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px; border-radius: 50px; font-weight: bold; letter-spacing: 1.5px;">
+                        {{ isEdit ? 'SAVE PRODUCT CHANGES' : 'CREATE PRODUCT RECORD' }}
+                    </button>
+
+                {{ form_end(productForm) }}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

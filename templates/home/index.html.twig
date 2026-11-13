@@ -1,0 +1,183 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}2THSND4 - Express Your Confidence{% endblock %}
+
+{% block body %}
+    <!-- HERO SECTION -->
+    <section class="hero">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="express-text">Express your</span>
+                    <span class="highlight">CONFIDENCE.</span>
+                    <span class="wear-brand">
+                        <span class="wear-text">Wear</span>
+                        <span class="brand">2THSND4</span>
+                    </span>
+                </h1>
+
+                <p class="hero-description">
+                    Explore the latest fashion trends with <br>
+                    premium quality outfits designed just for you.
+                </p>
+
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">4.9</span>
+                        <span class="stat-label">⭐ Ratings</span>
+                    </div>
+                    <div class="stat-divider"></div>
+                    <div class="stat-item">
+                        <span class="stat-number">3,000+</span>
+                        <span class="stat-label">Trusted Customers</span>
+                    </div>
+                </div>
+
+                <a href="{{ path('app_shop') }}" class="btn btn-primary">SHOP NOW</a>
+            </div>
+
+            <div class="hero-image">
+                <img src="{{ asset('images/herosectionmodel.png') }}" alt="2THSND4 Hero Model">
+            </div>
+        </div>
+    </section>
+
+    <!-- QUOTE SECTION -->
+    <section class="quote-section">
+        <div class="quote-overlay">
+            <div class="container">
+                <div class="quote-content">
+                    <p>
+                        TOO MANY BASIC FITS. NOT ENOUGH ATTITUDE. <br>
+                        BUILT FOR THOSE WHO REFUSE TO BLEND IN.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FEATURED COLLECTION -->
+    <section class="featured-collection">
+        <div class="container">
+            <div class="section-header">
+                <h2>FEATURED COLLECTION</h2>
+                <p>Discover our best-selling street pieces</p>
+            </div>
+
+            <div class="carousel-wrapper">
+                <button class="carousel-btn prev" onclick="scrollCarousel(-1)">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <div class="products-carousel" id="productsCarousel">
+                    {% for product in products %}
+                        <div class="product-card">
+                            <div class="product-image">
+                                <a href="{{ path('app_product_detail', {'id': product.id}) }}">
+                                    <img src="{{ asset('images/' ~ product.image) }}" alt="{{ product.name }}">
+                                </a>
+                            </div>
+                            <h3>{{ product.name }}</h3>
+                            <p class="price">{{ product.formattedPrice }}</p>
+
+                            {% if product.isOutOfStock %}
+                                <button class="btn btn-secondary" disabled style="opacity: 0.5; cursor: not-allowed; width: 100%;">Sold Out</button>
+                            {% else %}
+                                <form action="{{ path('app_cart_add', {'id': product.id}) }}" method="POST">
+                                    <input type="hidden" name="quantity" value="1">
+                                    <input type="hidden" name="size" value="M">
+                                    <button type="submit" class="btn btn-add" style="width: 100%;">Add to Cart</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    {% else %}
+                        <p style="color: #888; text-align: center; padding: 20px;">No products currently available.</p>
+                    {% endfor %}
+                </div>
+
+                <button class="carousel-btn next" onclick="scrollCarousel(1)">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- BUY MORE SAVE MORE -->
+    <section class="buy-more-section">
+        <div class="container">
+            <div class="buy-more-wrapper">
+                <div class="buy-more-image">
+                    <img src="{{ asset('images/bmmodel.png') }}" alt="Buy More Save More">
+                </div>
+
+                <div class="buy-more-content">
+                    <div class="features-list">
+                        <div class="feature-item">
+                            <span class="feature-icon">✔️</span>
+                            <span class="feature-text">Secure Checkout</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✔️</span>
+                            <span class="feature-text">Premium Quality Fabrics</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✔️</span>
+                            <span class="feature-text">Limited Drops Only</span>
+                        </div>
+                        <div class="feature-item">
+                            <span class="feature-icon">✔️</span>
+                            <span class="feature-text">Shipping Nationwide</span>
+                        </div>
+                    </div>
+
+                    <h2>BUY MORE, <br><span class="highlight">SAVE MORE</span></h2>
+                    <a href="{{ path('app_shop') }}" class="btn btn-primary">GET YOURS NOW</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RATINGS SECTION -->
+    <section class="ratings-section">
+        <div class="container">
+            <div class="ratings-content">
+                <div class="rating-header">
+                    <span class="rating-number">4.9</span>
+                    <span class="rating-stars">⭐⭐⭐⭐⭐</span>
+                </div>
+
+                <p class="rating-text">
+                    REAL REVIEWS FROM CUSTOMERS <br>
+                    WHO WEAR 2THSND4 WITH CONFIDENCE.
+                </p>
+
+                <div class="reviewers">
+                    <div class="reviewer">
+                        <img src="{{ asset('images/r1.png') }}" alt="Reviewer 1">
+                        <span class="reviewer-name">Jhon D.</span>
+                    </div>
+                    <div class="reviewer">
+                        <img src="{{ asset('images/r2.png') }}" alt="Reviewer 2">
+                        <span class="reviewer-name">Anna R.</span>
+                    </div>
+                    <div class="reviewer">
+                        <img src="{{ asset('images/r3.png') }}" alt="Reviewer 3">
+                        <span class="reviewer-name">Michael V.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+    function scrollCarousel(direction) {
+        const carousel = document.getElementById('productsCarousel');
+        if (carousel) {
+            const scrollAmount = 300 * direction;
+            carousel.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+        }
+    }
+</script>
+{% endblock %}

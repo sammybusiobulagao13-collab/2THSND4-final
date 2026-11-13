@@ -1,0 +1,134 @@
+{% extends 'admin/layout.html.twig' %}
+
+{% block title %}2THSND4 - Orders Management{% endblock %}
+
+{% block admin_body %}
+    <div style="margin-bottom: 25px;">
+        <h1 style="font-family: var(--font-primary); font-size: 26px; color: #fff; letter-spacing: 1.5px;">CUSTOMER ORDERS</h1>
+        <p style="color: #888; font-size: 14px;">Track client shipments, dispatch statuses, and process order fulfillment.</p>
+    </div>
+
+    <!-- Status counts -->
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 25px;">
+        <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 22px; font-weight: bold; color: #fff;">{{ totalOrders }}</div>
+            <div style="color: #888; font-size: 11px; text-transform: uppercase;">Total Orders</div>
+        </div>
+        <div style="background: rgba(255, 193, 7, 0.08); border: 1px solid rgba(255, 193, 7, 0.2); border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 22px; font-weight: bold; color: #ffd659;">{{ processingOrders }}</div>
+            <div style="color: #ffd659; font-size: 11px; text-transform: uppercase;">Processing</div>
+        </div>
+        <div style="background: rgba(23, 162, 184, 0.08); border: 1px solid rgba(23, 162, 184, 0.2); border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 22px; font-weight: bold; color: #5bc0de;">{{ approvedOrders }}</div>
+            <div style="color: #5bc0de; font-size: 11px; text-transform: uppercase;">Approved</div>
+        </div>
+        <div style="background: rgba(0, 123, 255, 0.08); border: 1px solid rgba(0, 123, 255, 0.2); border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 22px; font-weight: bold; color: #66b0ff;">{{ shippedOrders }}</div>
+            <div style="color: #66b0ff; font-size: 11px; text-transform: uppercase;">Shipped</div>
+        </div>
+        <div style="background: rgba(40, 167, 69, 0.08); border: 1px solid rgba(40, 167, 69, 0.2); border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 22px; font-weight: bold; color: #5dd879;">{{ deliveredOrders }}</div>
+            <div style="color: #5dd879; font-size: 11px; text-transform: uppercase;">Delivered</div>
+        </div>
+        <div style="background: rgba(220, 53, 69, 0.08); border: 1px solid rgba(220, 53, 69, 0.2); border-radius: 8px; padding: 12px; text-align: center;">
+            <div style="font-size: 22px; font-weight: bold; color: #ff6b7b;">{{ cancelledOrders }}</div>
+            <div style="color: #ff6b7b; font-size: 11px; text-transform: uppercase;">Cancelled</div>
+        </div>
+    </div>
+
+    <!-- Filter form -->
+    <div class="admin-table-card">
+        <form method="GET" action="{{ path('app_admin_orders') }}" style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 250px;">
+                <input type="text" name="search" value="{{ search }}" placeholder="Search by Order #, customer name, email, or phone..." style="width: 100%; padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;">
+            </div>
+
+            <div>
+                <select name="status" style="padding: 10px 16px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;">
+                    <option value="all">All Statuses</option>
+                    <option value="Processing" {{ status == 'Processing' ? 'selected' : '' }}>Processing</option>
+                    <option value="Approved" {{ status == 'Approved' ? 'selected' : '' }}>Approved</option>
+                    <option value="Shipped" {{ status == 'Shipped' ? 'selected' : '' }}>Shipped</option>
+                    <option value="Delivered" {{ status == 'Delivered' ? 'selected' : '' }}>Delivered</option>
+                    <option value="Cancelled" {{ status == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-sm-action btn-sm-toggle" style="padding: 10px 18px; border-radius: 8px;">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+            {% if search or (status and status != 'all') %}
+                <a href="{{ path('app_admin_orders') }}" class="btn-sm-action btn-sm-delete" style="padding: 10px 18px; border-radius: 8px;">
+                    Reset
+                </a>
+            {% endif %}
+        </form>
+
+        <div style="overflow-x: auto;">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Order #</th>
+                        <th>Customer Details</th>
+                        <th>Delivery Destination</th>
+                        <th>Items &amp; Total</th>
+                        <th>Fulfillment Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>
+                                <strong style="color: #fff; font-size: 14px;">#{{ order.orderNumber }}</strong>
+                                <div style="font-size: 11px; color: #888; margin-top: 3px;">{{ order.createdAt|date('M d, Y g:i A') }}</div>
+                            </td>
+                            <td>
+                                <div style="font-weight: 600; color: #fff;">{{ order.user.name }}</div>
+                                <div style="font-size: 12px; color: #888;">{{ order.user.email }}</div>
+                                <div style="font-size: 12px; color: #aaa;"><i class="fas fa-phone-alt" style="font-size: 10px;"></i> {{ order.phone }}</div>
+                            </td>
+                            <td style="font-size: 13px;">
+                                <div>{{ order.shippingAddress }}</div>
+                                <div style="color: #888;">{{ order.city }}, {{ order.zipCode }}</div>
+                                <div style="margin-top: 4px; color: #17a2b8; font-size: 11px; font-weight: bold;">{{ order.deliveryOption }} Express</div>
+                            </td>
+                            <td>
+                                <div style="color: #5dd879; font-weight: bold; font-size: 15px;">{{ order.formattedTotal }}</div>
+                                <div style="font-size: 11px; color: #888;">
+                                    {% for item in order.orderItems %}
+                                        {{ item.productName }} ({{ item.size }}) &times; {{ item.quantity }}{{ not loop.last ? ', ' : '' }}
+                                    {% endfor %}
+                                </div>
+                            </td>
+                            <td>
+                                <form action="{{ path('app_admin_order_status', {'id': order.id}) }}" method="POST" style="display: flex; gap: 6px; align-items: center;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('order_status_' ~ order.id) }}">
+                                    <select name="status" onchange="this.form.submit()" style="padding: 6px 10px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: #fff; font-size: 12px; cursor: pointer;">
+                                        <option value="Processing" {{ order.status == 'Processing' ? 'selected' : '' }}>Processing</option>
+                                        <option value="Approved" {{ order.status == 'Approved' ? 'selected' : '' }}>Approved</option>
+                                        <option value="Shipped" {{ order.status == 'Shipped' ? 'selected' : '' }}>Shipped</option>
+                                        <option value="Delivered" {{ order.status == 'Delivered' ? 'selected' : '' }}>Delivered</option>
+                                        <option value="Cancelled" {{ order.status == 'Cancelled' ? 'selected' : '' }}>Cancelled</option>
+                                    </select>
+                                </form>
+                            </td>
+                            <td>
+                                <button type="button" class="btn-sm-action btn-sm-delete" onclick="openAdminConfirm('delete-order-form-{{ order.id }}', 'Delete Order Record', 'Are you sure you want to permanently delete order #{{ order.orderNumber|e('js') }}?');">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                                <form id="delete-order-form-{{ order.id }}" action="{{ path('app_admin_order_delete', {'id': order.id}) }}" method="POST" style="display: none;">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('delete_order_' ~ order.id) }}">
+                                </form>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" style="text-align: center; padding: 40px; color: #888;">No orders found.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

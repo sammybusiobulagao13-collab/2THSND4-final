@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}403 Access Denied - 2THSND4{% endblock %}
+
+{% block body %}
+<section style="min-height: 75vh; display: flex; align-items: center; justify-content: center; background-image: url('{{ asset('images/texture.jpg') }}'); background-size: cover; padding: 60px 20px;">
+    <div style="background: rgba(10, 10, 26, 0.95); border: 1px solid rgba(255, 68, 68, 0.3); border-radius: 16px; padding: 45px 35px; max-width: 520px; width: 100%; text-align: center; box-shadow: 0 15px 45px rgba(0,0,0,0.8);">
+        <div style="font-size: 64px; color: #ff4d5a; margin-bottom: 20px;">
+            <i class="fas fa-lock"></i>
+        </div>
+        <h1 style="font-family: var(--font-primary); color: #fff; font-size: 28px; margin-bottom: 12px; letter-spacing: 2px;">403 - ACCESS DENIED</h1>
+        <p style="color: #bbb; font-size: 15px; line-height: 1.6; margin-bottom: 25px;">
+            {{ exception.messageKey|default('You do not have the required permissions or role privileges to access this secure resource.')|trans(exception.messageData|default([]), 'security') }}
+        </p>
+
+        <div style="background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.15); border-radius: 8px; padding: 15px; margin-bottom: 30px; font-size: 13px; color: #888; text-align: left;">
+            <div><strong style="color: #fff;">Notice:</strong> Administrator areas and other staff members' records are strictly protected under role-based authorization security rules.</div>
+        </div>
+
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_admin_dashboard') }}" class="btn-primary" style="padding: 12px 25px; border-radius: 50px; text-decoration: none;">Return to Dashboard</a>
+            {% elseif is_granted('ROLE_STAFF') %}
+                <a href="{{ path('app_staff_products') }}" class="btn-primary" style="padding: 12px 25px; border-radius: 50px; text-decoration: none;">Return to Staff Portal</a>
+            {% else %}
+                <a href="{{ path('app_shop') }}" class="btn-primary" style="padding: 12px 25px; border-radius: 50px; text-decoration: none;">Return to Shop</a>
+            {% endif %}
+            <a href="{{ path('app_home') }}" style="padding: 12px 25px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.2); color: #fff; text-decoration: none;">Home Page</a>
+        </div>
+    </div>
+</section>
+{% endblock %}

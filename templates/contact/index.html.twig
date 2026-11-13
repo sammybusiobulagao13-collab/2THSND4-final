@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}2THSND4 - Contact Us{% endblock %}
+
+{% block body %}
+<section class="contact-page">
+    <div class="container">
+        <div class="contact-page-content">
+            <h1>CONTACT US</h1>
+            <p class="contact-subtitle">We'd love to hear from you! Reach out to the 2THSND4 crew with any inquiries or feedback.</p>
+
+            <div class="contact-info">
+                <div class="contact-item">
+                    <span class="contact-icon" style="font-size: 24px;"><i class="fas fa-envelope"></i></span>
+                    <h3>Email</h3>
+                    <p>2THSND4@gmail.com</p>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon" style="font-size: 24px;"><i class="fas fa-phone-alt"></i></span>
+                    <h3>Phone</h3>
+                    <p>+63 936 313 6992</p>
+                </div>
+                <div class="contact-item">
+                    <span class="contact-icon" style="font-size: 24px;"><i class="fas fa-map-marker-alt"></i></span>
+                    <h3>Studio &amp; Flagship</h3>
+                    <p>Dumaguete City, Neg Or. Philippines</p>
+                </div>
+            </div>
+
+            {% if app.user %}
+                {{ form_start(contactForm, {'attr': {'class': 'contact-form'}}) }}
+
+                    <div class="form-group" style="margin-bottom: 18px;">
+                        {{ form_label(contactForm.name, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                        {{ form_widget(contactForm.name, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 14px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
+                        <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(contactForm.name) }}</div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 18px;">
+                        {{ form_label(contactForm.email, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                        {{ form_widget(contactForm.email, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 14px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
+                        <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(contactForm.email) }}</div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 18px;">
+                        {{ form_label(contactForm.subject, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                        {{ form_widget(contactForm.subject, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 14px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
+                        <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(contactForm.subject) }}</div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom: 25px;">
+                        {{ form_label(contactForm.message, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
+                        {{ form_widget(contactForm.message, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 14px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
+                        <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(contactForm.message) }}</div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="padding: 14px 35px; border-radius: 50px; font-weight: bold; letter-spacing: 1.5px;">
+                        <i class="fas fa-paper-plane" style="margin-right: 8px;"></i> SEND MESSAGE
+                    </button>
+
+                {{ form_end(contactForm) }}
+            {% else %}
+                <div class="login-required" style="text-align: center; padding: 40px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); max-width: 500px; margin: 30px auto;">
+                    <i class="fas fa-lock" style="font-size: 35px; color: #ffd659; margin-bottom: 15px;"></i>
+                    <h3 style="color: #fff; margin-bottom: 10px;">Authentication Required</h3>
+                    <p style="color: #aaa; margin-bottom: 20px;">Please log in or register an account to send a message to our support staff.</p>
+                    <a href="{{ path('app_login') }}" class="btn btn-primary" style="padding: 12px 28px; border-radius: 50px; text-decoration: none;">LOG IN / SIGN UP</a>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}

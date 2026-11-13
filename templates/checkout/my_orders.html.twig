@@ -1,0 +1,64 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}2THSND4 - My Orders{% endblock %}
+
+{% block body %}
+<section class="cart-page" style="min-height: 80vh;">
+    <div class="container">
+        <div class="cart-header">
+            <h1>MY ORDERS</h1>
+            <p>Track your active shipments and view past order history</p>
+        </div>
+
+        {% if orders|length > 0 %}
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                {% for order in orders %}
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 25px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.06); padding-bottom: 15px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                            <div>
+                                <span style="font-weight: bold; color: #fff; font-size: 16px; letter-spacing: 1px;">#{{ order.orderNumber }}</span>
+                                <span style="color: #888; font-size: 12px; margin-left: 12px;">Placed on {{ order.createdAt|date('M d, Y g:i A') }}</span>
+                            </div>
+                            <div>
+                                {% set badgeColor = order.status == 'Delivered' ? '#5dd879' : (order.status == 'Cancelled' ? '#ff6b7b' : '#ffd659') %}
+                                <span style="display: inline-block; padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: bold; background: rgba(255,255,255,0.05); border: 1px solid {{ badgeColor }}; color: {{ badgeColor }};">
+                                    <i class="fas fa-circle" style="font-size: 8px; margin-right: 5px; vertical-align: middle;"></i> {{ order.status }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Items list -->
+                        <div style="margin-bottom: 15px;">
+                            {% for item in order.orderItems %}
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 14px; color: #ccc;">
+                                    <div>
+                                        <strong style="color: #fff;">{{ item.productName }}</strong> (Size: {{ item.size }}) &times; {{ item.quantity }}
+                                    </div>
+                                    <div>{{ item.formattedSubtotal }}</div>
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; font-size: 13px; color: #aaa;">
+                            <div>
+                                <span>Courier: <strong style="color: #fff;">{{ order.deliveryOption }}</strong></span> &bull; 
+                                <span>Payment: <strong style="color: #fff;">{{ order.paymentMethod }}</strong></span>
+                            </div>
+                            <div style="font-size: 18px; font-weight: bold; color: #fff;">
+                                Total: <span style="color: #5dd879;">{{ order.formattedTotal }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 70px 20px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
+                <div style="font-size: 50px; color: #555; margin-bottom: 15px;"><i class="fas fa-box-open"></i></div>
+                <h3 style="color: #fff; font-size: 20px; margin-bottom: 8px;">No orders found</h3>
+                <p style="color: #888; margin-bottom: 25px;">You haven't placed any orders with us yet.</p>
+                <a href="{{ path('app_shop') }}" class="btn btn-primary" style="padding: 12px 30px; border-radius: 50px; text-decoration: none;">START SHOPPING</a>
+            </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
