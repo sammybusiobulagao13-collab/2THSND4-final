@@ -225,6 +225,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: 8px;
+        font-family:var(--font-secondary);
     }
     .cs-pill {
         padding: 7px 14px;
@@ -270,9 +271,10 @@
         display: inline-flex;
         align-items: center;
         gap: 5px;
-        color: #ffffff;
-        font-size: 11px;
+        color: #13e000d5;
+        font-size: 15px;
         font-weight: 700;
+        font-family: var(--font-secondary);
     }
 
     /* Form Fields */
@@ -303,8 +305,8 @@
         border: 1.5px solid rgba(255, 255, 255, 0.1);
         border-radius: 10px;
         color: #fff;
-        font-size: 14px;
-        font-family: inherit;
+        font-size: 20px;
+        font-family: var(--font-secondary);
         box-sizing: border-box;
         transition: all 0.25s ease;
     }
@@ -327,8 +329,8 @@
         border: 1.5px solid rgba(255, 255, 255, 0.1);
         border-radius: 10px;
         color: #fff;
-        font-size: 14px;
-        font-family: inherit;
+        font-size: 20px;
+        font-family: var(--font-secondary);
         box-sizing: border-box;
         resize: vertical;
         min-height: 130px;
@@ -560,7 +562,7 @@
                                 <div>
                                     <div class="cs-label">
                                         <span>Full Name</span>
-                                        <span style="font-size: 10px; color: #666;"><i class="fas fa-lock"></i> Locked</span>
+                                        <span style="font-size: 12px; font-family: var(--font-secondary); color: #f72323ff;"></span>
                                     </div>
                                     {{ form_widget(contactForm.name, {
                                         'attr': {
@@ -574,7 +576,7 @@
                                 <div>
                                     <div class="cs-label">
                                         <span>Email Address</span>
-                                        <span style="font-size: 10px; color: #666;"><i class="fas fa-lock"></i> Locked</span>
+                                        <span style="font-size: 12px;font-family: var(--font-secondary); color: #f72323ff;"></span>
                                     </div>
                                     {{ form_widget(contactForm.email, {
                                         'attr': {
