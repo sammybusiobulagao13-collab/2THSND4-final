@@ -148,70 +148,31 @@
         line-height: 1.4;
     }
 
-    /* FAQ Box */
-    .cs-faq-box {
+    /* Info Notice Box */
+    .cs-notice-box {
         background: rgba(14, 14, 28, 0.7);
         border: 1px solid rgba(255, 255, 255, 0.08);
         border-radius: 16px;
         padding: 24px;
         backdrop-filter: blur(12px);
     }
-    .cs-faq-title {
-        font-family: var(--font-primary);
-        font-size: 16px;
-        letter-spacing: 1.5px;
-        color: #fff;
-        margin-bottom: 16px;
+    .cs-notice-header {
         display: flex;
         align-items: center;
         gap: 10px;
+        margin-bottom: 10px;
     }
-    .cs-faq-title i { color: #ffd659; font-size: 14px; }
-    .cs-faq-list {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
+    .cs-notice-header h3 {
+        font-family: var(--font-primary);
+        font-size: 15px;
+        letter-spacing: 1.5px;
+        color: #fff;
     }
-    .cs-faq-item {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 10px;
-        padding: 14px 16px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-    }
-    .cs-faq-item:hover {
-        background: rgba(255, 255, 255, 0.05);
-        border-color: rgba(255, 255, 255, 0.12);
-    }
-    .cs-faq-q {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    .cs-notice-box p {
         font-size: 13px;
-        font-weight: 600;
-        color: #eee;
-    }
-    .cs-faq-q i {
-        font-size: 11px;
-        color: #777;
-        transition: transform 0.2s ease;
-    }
-    .cs-faq-item.open .cs-faq-q i {
-        transform: rotate(180deg);
-        color: #5dd879;
-    }
-    .cs-faq-a {
-        display: none;
-        margin-top: 10px;
-        padding-top: 10px;
-        border-top: 1px dashed rgba(255, 255, 255, 0.08);
-        font-size: 12.5px;
         color: #aaa;
-        line-height: 1.5;
-    }
-    .cs-faq-item.open .cs-faq-a {
-        display: block;
+        line-height: 1.6;
+        margin: 0;
     }
 
     /* ── Right Column: Form Card ── */
@@ -531,62 +492,31 @@
                         </div>
                     </div>
 
+                    <!-- Operating Hours -->
+                    <div class="cs-channel-card">
+                        <div class="cs-channel-icon" style="color: #a29bfe;">
+                            <i class="fas fa-clock"></i>
+                        </div>
+                        <div class="cs-channel-info">
+                            <div class="label">Support Shift &amp; Hours</div>
+                            <div class="value">Monday &ndash; Saturday &bull; 9AM &ndash; 6PM PHT</div>
+                            <div class="desc">Messages received outside shifts are queued for next-day priority</div>
+                        </div>
+                    </div>
+
                 </div>
 
-                <!-- Instant FAQ Guidance -->
-                <div class="cs-faq-box">
-                    <div class="cs-faq-title">
-                        <i class="fas fa-bolt"></i>
-                        <span>QUICK HELP &amp; FREQUENT QUESTIONS</span>
+                <!-- Customer Service Guide Link Card -->
+                <div class="cs-notice-box">
+                    <div class="cs-notice-header">
+                        <i class="fas fa-circle-question" style="color: #ffd659; font-size: 18px;"></i>
+                        <h3>LOOKING FOR FAQS &amp; POLICIES?</h3>
                     </div>
-
-                    <div class="cs-faq-list">
-                        <!-- FAQ 1 -->
-                        <div class="cs-faq-item" onclick="toggleFaq(this)">
-                            <div class="cs-faq-q">
-                                <span>Where do I check my order status?</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                            <div class="cs-faq-a">
-                                You can track all live orders directly on your 
-                                <a href="{{ path('app_my_orders') }}" style="color: #5dd879; text-decoration: underline;">My Orders</a> 
-                                page. Real-time fulfillment statuses include <em>Processing</em>, <em>Approved</em>, <em>Shipped</em>, and <em>Delivered</em>.
-                            </div>
-                        </div>
-
-                        <!-- FAQ 2 -->
-                        <div class="cs-faq-item" onclick="toggleFaq(this)">
-                            <div class="cs-faq-q">
-                                <span>What are your shipping rates and thresholds?</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                            <div class="cs-faq-a">
-                                Standard nationwide delivery is <strong>&#8369;120.00</strong> via LBC / J&amp;T Express. Orders totaling <strong>&#8369;2,000.00 and above</strong> automatically receive <strong>FREE SHIPPING</strong>.
-                            </div>
-                        </div>
-
-                        <!-- FAQ 3 -->
-                        <div class="cs-faq-item" onclick="toggleFaq(this)">
-                            <div class="cs-faq-q">
-                                <span>How can I cancel an accidental order?</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                            <div class="cs-faq-a">
-                                Customers can cancel orders while in <em>Processing</em> or <em>Approved</em> status directly through the My Orders portal. Once cancelled, inventory is automatically restocked and the order is permanently locked.
-                            </div>
-                        </div>
-
-                        <!-- FAQ 4 -->
-                        <div class="cs-faq-item" onclick="toggleFaq(this)">
-                            <div class="cs-faq-q">
-                                <span>What is your typical inquiry turnaround time?</span>
-                                <i class="fas fa-chevron-down"></i>
-                            </div>
-                            <div class="cs-faq-a">
-                                Messages submitted via this portal are monitored directly by our store operations crew. Expect an email update within 1 to 4 business hours during operating shifts.
-                            </div>
-                        </div>
-                    </div>
+                    <p>For answers regarding payment methods, delivery couriers, free shipping rules, and our 30-day exchange policy, visit our dedicated Customer Service guide on the About page.</p>
+                    <a href="{{ path('app_about') }}#faqs" style="display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; color: #5dd879; font-weight: 700; font-size: 13px; text-decoration: underline;">
+                        <span>View Customer Service FAQs &amp; Policies</span>
+                        <i class="fas fa-arrow-right" style="font-size: 11px;"></i>
+                    </a>
                 </div>
 
             </div>
@@ -721,15 +651,6 @@
 </section>
 
 <script>
-    // FAQ Accordion Toggle
-    function toggleFaq(item) {
-        const isOpen = item.classList.contains('open');
-        document.querySelectorAll('.cs-faq-item').forEach(el => el.classList.remove('open'));
-        if (!isOpen) {
-            item.classList.add('open');
-        }
-    }
-
     // Quick Topic Selector
     function pickTopic(pill, topicName) {
         document.querySelectorAll('.cs-pill').forEach(p => p.classList.remove('active'));
