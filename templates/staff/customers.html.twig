@@ -1,0 +1,199 @@
+{% extends 'staff/layout.html.twig' %}
+
+{% block title %}Customers — Staff Portal{% endblock %}
+
+{% block page_title %}
+    <h1>CUSTOMERS</h1>
+    <p>View and manage registered customer accounts</p>
+{% endblock %}
+
+{% block staff_body %}
+<style>
+    .customer-search-bar {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 24px;
+        flex-wrap: wrap;
+        align-items: center;
+    }
+    .customer-search-bar input {
+        flex: 1;
+        min-width: 200px;
+        padding: 10px 16px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.12);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 13px;
+        outline: none;
+        transition: border 0.2s;
+    }
+    .customer-search-bar input::placeholder { color: #555; }
+    .customer-search-bar input:focus { border-color: rgba(255,255,255,0.3); }
+    .customer-search-bar button {
+        padding: 10px 20px;
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .customer-search-bar button:hover { background: rgba(255,255,255,0.15); }
+    .customer-search-bar a.clear-btn {
+        padding: 10px 16px;
+        background: rgba(220,53,69,0.08);
+        border: 1px solid rgba(220,53,69,0.2);
+        border-radius: 10px;
+        color: #ff6b7b;
+        font-size: 12px;
+        font-weight: bold;
+        text-decoration: none;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .customer-search-bar a.clear-btn:hover { background: rgba(220,53,69,0.18); }
+
+    .cust-avatar {
+        width: 34px; height: 34px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.04));
+        border: 1px solid rgba(255,255,255,0.12);
+        display: inline-flex;
+        align-items: center; justify-content: center;
+        font-size: 13px; font-weight: bold; color: #ccc;
+        flex-shrink: 0;
+    }
+    .cust-name-cell { display: flex; align-items: center; gap: 10px; }
+    .cust-name-cell .details .name { color: #fff; font-weight: bold; font-size: 13px; }
+    .cust-name-cell .details .username { color: #555; font-size: 11px; }
+
+    .sbadge-active   { background: rgba(40,167,69,0.12);  border: 1px solid rgba(40,167,69,0.3);  color: #5dd879; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+    .sbadge-inactive { background: rgba(220,53,69,0.12);  border: 1px solid rgba(220,53,69,0.3);  color: #ff6b7b; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
+
+    .btn-toggle-active   { background: rgba(220,53,69,0.1);  border: 1px solid rgba(220,53,69,0.25);  color: #ff6b7b;  font-size: 11px; font-weight: bold; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .btn-toggle-active:hover   { background: rgba(220,53,69,0.3); }
+    .btn-toggle-inactive { background: rgba(40,167,69,0.1);  border: 1px solid rgba(40,167,69,0.25);  color: #5dd879;  font-size: 11px; font-weight: bold; padding: 5px 12px; border-radius: 6px; cursor: pointer; transition: all 0.2s; }
+    .btn-toggle-inactive:hover { background: rgba(40,167,69,0.3); }
+
+    .empty-state { text-align: center; padding: 60px 20px; color: #555; }
+    .empty-state i { font-size: 40px; margin-bottom: 14px; display: block; }
+    .empty-state p { font-size: 14px; }
+
+    .orders-count { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: #888; }
+    .orders-count i { color: #555; }
+</style>
+
+{# ── Stat Boxes ── #}
+<div class="staff-stat-grid" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); margin-bottom: 24px;">
+    <div class="staff-stat">
+        <div class="num" style="color:#fff;">{{ totalCustomers }}</div>
+        <div class="lbl">Total Customers</div>
+    </div>
+    <div class="staff-stat">
+        <div class="num" style="color:#5dd879;">{{ activeCustomers }}</div>
+        <div class="lbl">Active</div>
+    </div>
+    <div class="staff-stat">
+        <div class="num" style="color:#ff6b7b;">{{ inactiveCustomers }}</div>
+        <div class="lbl">Deactivated</div>
+    </div>
+    <div class="staff-stat">
+        <div class="num" style="color:#66b0ff;">{{ customers|length }}</div>
+        <div class="lbl">{{ search ? 'Search Results' : 'Showing All' }}</div>
+    </div>
+</div>
+
+{# ── Search ── #}
+<form method="GET" action="{{ path('app_staff_customers') }}" class="customer-search-bar">
+    <input
+        type="text"
+        name="search"
+        placeholder="Search by name, email, or username…"
+        value="{{ search ?? '' }}"
+        autocomplete="off"
+    >
+    <button type="submit"><i class="fas fa-search"></i> Search</button>
+    {% if search %}
+        <a href="{{ path('app_staff_customers') }}" class="clear-btn"><i class="fas fa-times"></i> Clear</a>
+    {% endif %}
+</form>
+
+{# ── Customer Table ── #}
+<div class="staff-card" style="padding: 0; overflow: hidden;">
+    {% if customers is empty %}
+        <div class="empty-state">
+            <i class="fas fa-users-slash"></i>
+            <p>{{ search ? 'No customers matched your search.' : 'No customer accounts found.' }}</p>
+        </div>
+    {% else %}
+        <div style="overflow-x: auto;">
+            <table class="staff-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Customer</th>
+                        <th>Email</th>
+                        <th>Orders</th>
+                        <th>Registered</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for customer in customers %}
+                    <tr>
+                        <td style="color:#444; font-size:12px;">{{ customer.id }}</td>
+                        <td>
+                            <div class="cust-name-cell">
+                                <div class="cust-avatar">{{ customer.name|first|upper }}</div>
+                                <div class="details">
+                                    <div class="name">{{ customer.name }}</div>
+                                    <div class="username">@{{ customer.username }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="color:#888; font-size:12px;">{{ customer.email }}</td>
+                        <td>
+                            <span class="orders-count">
+                                <i class="fas fa-box"></i>
+                                {{ customer.orders|length }}
+                            </span>
+                        </td>
+                        <td style="color:#666; font-size:12px;">
+                            {{ customer.createdAt ? customer.createdAt|date('M d, Y') : '—' }}
+                        </td>
+                        <td>
+                            {% if customer.isActive %}
+                                <span class="sbadge-active">Active</span>
+                            {% else %}
+                                <span class="sbadge-inactive">Disabled</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <form method="POST" action="{{ path('app_staff_customer_toggle', {id: customer.id}) }}" style="display:inline;">
+                                <input type="hidden" name="_token" value="{{ csrf_token('toggle_customer_' ~ customer.id) }}">
+                                <button type="submit" class="{{ customer.isActive ? 'btn-toggle-active' : 'btn-toggle-inactive' }}"
+                                    onclick="return confirm('{{ customer.isActive ? 'Deactivate' : 'Activate' }} {{ customer.name }}?')">
+                                    <i class="fas fa-{{ customer.isActive ? 'ban' : 'check-circle' }}"></i>
+                                    {{ customer.isActive ? 'Deactivate' : 'Activate' }}
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+</div>
+
+{# ── Info Notice ── #}
+<div style="margin-top: 16px; padding: 12px 16px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; font-size: 12px; color: #555; display: flex; align-items: center; gap: 8px;">
+    <i class="fas fa-shield-alt" style="color:#444;"></i>
+    Staff members can view customer info and toggle account status. Role changes and account deletion are admin-only.
+</div>
+{% endblock %}

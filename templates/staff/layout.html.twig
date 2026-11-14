@@ -294,6 +294,11 @@
                     {% endif %}
                 </a>
             </li>
+            <li>
+                <a href="{{ path('app_staff_customers') }}" class="{{ app.current_route starts with 'app_staff_customer' ? 'active' : '' }}">
+                    <i class="fas fa-users"></i> Customers
+                </a>
+            </li>
 
             <div style="border-top: 1px solid rgba(255,255,255,0.05); margin: 14px 0;"></div>
 

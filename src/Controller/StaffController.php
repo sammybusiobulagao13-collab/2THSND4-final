@@ -4,9 +4,11 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Form\ProductType;
+use App\Entity\User;
 use App\Repository\MessageRepository;
 use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -162,5 +164,46 @@ class StaffController extends AbstractController
         }
 
         return $this->redirectToRoute('app_staff_products');
+    }
+
+    // ── Customer Management ──────────────────────────────────────────────────
+
+    #[Route('/customers', name: 'app_staff_customers')]
+    public function customers(Request $request, UserRepository $userRepository): Response
+    {
+        $search = $request->query->get('search');
+        $customers = $userRepository->findCustomers($search);
+
+        return $this->render('staff/customers.html.twig', [
+            'customers'         => $customers,
+            'search'            => $search,
+            'totalCustomers'    => $userRepository->countCustomers(),
+            'activeCustomers'   => $userRepository->countActiveCustomers(),
+            'inactiveCustomers' => $userRepository->countInactiveCustomers(),
+        ]);
+    }
+
+    #[Route('/customers/{id}/toggle', name: 'app_staff_customer_toggle', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function toggleCustomer(User $user, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        // STRICT GUARD: Staff can only toggle pure customers — never staff/admin accounts
+        $roles = $user->getRoles();
+        if (in_array('ROLE_STAFF', $roles) || in_array('ROLE_ADMIN', $roles)) {
+            $this->addFlash('danger', 'Access Denied: You cannot modify staff or admin accounts.');
+            return $this->redirectToRoute('app_staff_customers');
+        }
+
+        if (!$this->isCsrfTokenValid('toggle_customer_' . $user->getId(), $request->request->get('_token'))) {
+            $this->addFlash('danger', 'Invalid security token.');
+            return $this->redirectToRoute('app_staff_customers');
+        }
+
+        $user->setIsActive(!$user->isActive());
+        $entityManager->flush();
+
+        $status = $user->isActive() ? 'activated' : 'deactivated';
+        $this->addFlash('success', sprintf('Customer "%s" has been %s.', $user->getName(), $status));
+
+        return $this->redirectToRoute('app_staff_customers');
     }
 }
