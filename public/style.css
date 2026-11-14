@@ -432,19 +432,21 @@ body {
 .product-card {
     min-width: 250px;
     max-width: 550px;
-    background: #000000;
-    border-radius: 50px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
+    border-radius: 20px;
     padding: 30px;
     text-align: center;
     transition: all 0.3s ease;
-    border: 1px solid #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
     flex-shrink: 0;
 }
 
 .product-card:hover {
-    transform: translateY(-10px);
-    border-color: var(--primary-color);
-    box-shadow: 0 15px 40px solid #ffffff;
+    transform: translateY(-8px);
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 18px 45px rgba(0, 0, 0, 0.55);
 }
 
 .product-image {
