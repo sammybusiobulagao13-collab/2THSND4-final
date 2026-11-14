@@ -328,13 +328,18 @@ class AdminController extends AbstractController
     public function updateOrderStatus(Order $order, Request $request, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('order_status_' . $order->getId(), $request->request->get('_token'))) {
+            // Cancelled orders cannot be re-opened — they are locked
+            if ($order->getStatus() === 'Cancelled') {
+                $this->addFlash('danger', 'Order #' . $order->getOrderNumber() . ' was cancelled by the customer and cannot be edited.');
+                return $this->redirectToRoute('app_admin_orders');
+            }
+
             $newStatus = $request->request->get('status');
-            $validStatuses = ['Processing', 'Approved', 'Shipped', 'Delivered', 'Cancelled'];
+            $validStatuses = ['Processing', 'Approved', 'Shipped', 'Delivered'];
 
             if (in_array($newStatus, $validStatuses, true)) {
                 $order->setStatus($newStatus);
                 $entityManager->flush();
-
                 $this->addFlash('success', sprintf('Order #%s status changed to %s.', $order->getOrderNumber(), $newStatus));
             }
         }

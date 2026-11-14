@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}2THSND4 - Staff Portal{% endblock %}</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/forwbe.png') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('style.css') }}">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #0a0a1a; color: #fff; }
+        .staff-portal-container { display: flex; min-height: 100vh; }
+
+        /* ── Sidebar ── */
+        .staff-sidebar {
+            width: 250px;
+            background: linear-gradient(180deg, #0d0d1a 0%, #000 100%);
+            padding: 20px;
+            border-right: 1px solid rgba(255,255,255,0.05);
+            min-height: 100vh;
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+            z-index: 99;
+        }
+        .staff-sidebar .logo {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            padding: 12px 0 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            margin-bottom: 18px;
+            text-align: center;
+            letter-spacing: 2px;
+            font-family: var(--font-primary, 'Bebas Neue', sans-serif);
+        }
+        .staff-sidebar .logo span { color: #17a2b8; }
+        .staff-sidebar ul { list-style: none; padding: 0; }
+        .staff-sidebar ul li { margin-bottom: 3px; }
+        .staff-sidebar ul li a {
+            display: flex;
+            align-items: center;
+            padding: 11px 16px;
+            color: #888;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.25s;
+            font-size: 13.5px;
+            gap: 10px;
+        }
+        .staff-sidebar ul li a:hover,
+        .staff-sidebar ul li a.active {
+            background: rgba(23,162,184,0.12);
+            color: #17a2b8;
+        }
+        .staff-sidebar ul li a.active {
+            border-left: 3px solid #17a2b8;
+        }
+        .staff-sidebar ul li a i { width: 18px; text-align: center; }
+        .staff-sidebar .sidebar-section-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #444;
+            padding: 14px 16px 6px;
+        }
+        .staff-badge {
+            margin-left: auto;
+            background: #17a2b8;
+            color: #000;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 2px 7px;
+            border-radius: 20px;
+            min-width: 20px;
+            text-align: center;
+        }
+        .staff-badge-orders { background: #ffd659; color: #000; }
+        .staff-badge-msgs { background: #ff6b7b; color: #fff; }
+
+        /* ── Main ── */
+        .staff-main {
+            flex: 1;
+            margin-left: 250px;
+            padding: 32px;
+            min-height: 100vh;
+            background: #0a0a1a;
+        }
+
+        /* ── Topbar ── */
+        .staff-topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .staff-topbar .page-title h1 {
+            font-family: var(--font-primary, 'Bebas Neue', sans-serif);
+            font-size: 24px;
+            color: #fff;
+            letter-spacing: 1.5px;
+        }
+        .staff-topbar .page-title p { color: #888; font-size: 13px; margin-top: 2px; }
+        .staff-topbar .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+        .staff-user-badge {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(23,162,184,0.08);
+            border: 1px solid rgba(23,162,184,0.2);
+            border-radius: 50px;
+            padding: 8px 16px;
+            font-size: 13px;
+        }
+        .staff-user-badge .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #17a2b8, #0d6efd);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 12px;
+            color: #fff;
+        }
+
+        /* ── Cards / Tables ── */
+        .staff-card {
+            background: rgba(255,255,255,0.025);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 14px;
+            padding: 24px;
+        }
+        .staff-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+        .staff-stat {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 12px;
+            padding: 18px 16px;
+            text-align: center;
+            transition: border-color 0.2s;
+        }
+        .staff-stat:hover { border-color: rgba(23,162,184,0.3); }
+        .staff-stat .num { font-size: 26px; font-weight: bold; margin-bottom: 4px; }
+        .staff-stat .lbl { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #777; }
+        .staff-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+        .staff-table th, .staff-table td {
+            padding: 13px 15px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .staff-table th { color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        .staff-table td { color: #ccc; }
+        .staff-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+        /* Status badges */
+        .sbadge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .sbadge-processing { background: rgba(255,193,7,0.12); border: 1px solid rgba(255,193,7,0.3); color: #ffd659; }
+        .sbadge-approved   { background: rgba(23,162,184,0.12); border: 1px solid rgba(23,162,184,0.3); color: #5bc0de; }
+        .sbadge-shipped    { background: rgba(0,123,255,0.12);  border: 1px solid rgba(0,123,255,0.3);  color: #66b0ff; }
+        .sbadge-delivered  { background: rgba(40,167,69,0.12);  border: 1px solid rgba(40,167,69,0.3);  color: #5dd879; }
+        .sbadge-cancelled  { background: rgba(220,53,69,0.12);  border: 1px solid rgba(220,53,69,0.3);  color: #ff6b7b; }
+        .sbadge-unread     { background: rgba(220,53,69,0.12);  border: 1px solid rgba(220,53,69,0.3);  color: #ff6b7b; }
+        .sbadge-read       { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #888; }
+
+        /* Modal */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.75);
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-box {
+            background: #0d0d1a;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 16px;
+            padding: 36px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+        }
+        .modal-box h3 { font-size: 18px; color: #fff; margin-bottom: 10px; }
+        .modal-box p  { font-size: 14px; color: #aaa; margin-bottom: 24px; }
+        .modal-actions { display: flex; gap: 12px; justify-content: center; }
+        .modal-btn { padding: 10px 24px; border-radius: 50px; font-size: 13px; font-weight: bold; cursor: pointer; border: none; }
+        .modal-btn-cancel { background: rgba(255,255,255,0.08); color: #aaa; }
+        .modal-btn-cancel:hover { background: rgba(255,255,255,0.15); }
+        .modal-btn-danger  { background: linear-gradient(135deg, #dc3545, #c82333); color: #fff; }
+        .modal-btn-danger:hover { opacity: 0.9; }
+
+        /* Flashes */
+        .flash-msg {
+            padding: 12px 18px;
+            border-radius: 10px;
+            margin-bottom: 18px;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .flash-success { background: rgba(40,167,69,0.1); border: 1px solid rgba(40,167,69,0.3); color: #5dd879; }
+        .flash-danger  { background: rgba(220,53,69,0.1);  border: 1px solid rgba(220,53,69,0.3);  color: #ff6b7b; }
+        .flash-info    { background: rgba(23,162,184,0.1); border: 1px solid rgba(23,162,184,0.3); color: #17a2b8; }
+
+        /* Action btns */
+        .btn-sm-cyan {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 6px 14px; border-radius: 6px;
+            background: rgba(23,162,184,0.1); border: 1px solid rgba(23,162,184,0.3);
+            color: #17a2b8; font-size: 12px; font-weight: bold;
+            text-decoration: none; cursor: pointer; transition: all 0.2s;
+        }
+        .btn-sm-cyan:hover { background: #17a2b8; color: #000; }
+        .btn-sm-red {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 6px 14px; border-radius: 6px;
+            background: rgba(220,53,69,0.1); border: 1px solid rgba(220,53,69,0.3);
+            color: #ff6b7b; font-size: 12px; font-weight: bold;
+            cursor: pointer; transition: all 0.2s; border: none;
+        }
+        .btn-sm-red:hover { background: #dc3545; color: #fff; }
+    </style>
+</head>
+<body>
+<div class="staff-portal-container">
+
+    <!-- ── Sidebar ── -->
+    <aside class="staff-sidebar">
+        <div class="logo">
+            2THSND4 <br><span style="font-size:11px; letter-spacing:3px; color:#17a2b8;">STAFF PORTAL</span>
+        </div>
+
+        <ul>
+            <li class="sidebar-section-label">Overview</li>
+            <li>
+                <a href="{{ path('app_staff_dashboard') }}" class="{{ app.current_route == 'app_staff_dashboard' ? 'active' : '' }}">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+            </li>
+
+            <li class="sidebar-section-label">Manage</li>
+            <li>
+                <a href="{{ path('app_staff_products') }}" class="{{ app.current_route starts with 'app_staff_product' ? 'active' : '' }}" style="justify-content: space-between;">
+                    <span><i class="fas fa-box-open"></i> Products</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_staff_orders') }}" class="{{ app.current_route == 'app_staff_orders' ? 'active' : '' }}" style="justify-content: space-between;">
+                    <span><i class="fas fa-shipping-fast"></i> Orders</span>
+                    {% if adminNotifications.pendingOrders > 0 %}
+                        <span class="staff-badge staff-badge-orders">{{ adminNotifications.pendingOrders }}</span>
+                    {% endif %}
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_staff_inquiries') }}" class="{{ app.current_route == 'app_staff_inquiries' ? 'active' : '' }}" style="justify-content: space-between;">
+                    <span><i class="fas fa-envelope"></i> Inquiries</span>
+                    {% if adminNotifications.unreadMessages > 0 %}
+                        <span class="staff-badge staff-badge-msgs">{{ adminNotifications.unreadMessages }}</span>
+                    {% endif %}
+                </a>
+            </li>
+
+            <div style="border-top: 1px solid rgba(255,255,255,0.05); margin: 14px 0;"></div>
+
+            <li>
+                <a href="{{ path('app_shop') }}">
+                    <i class="fas fa-store"></i> View Storefront
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('app_profile') }}">
+                    <i class="fas fa-user-tie"></i> My Profile
+                </a>
+            </li>
+
+            <div style="border-top: 1px solid rgba(255,255,255,0.05); margin: 14px 0;"></div>
+
+            <li>
+                <a href="{{ path('app_logout') }}" style="color: #c0392b !important;">
+                    <i class="fas fa-sign-out-alt"></i> Log Out
+                </a>
+            </li>
+        </ul>
+    </aside>
+
+    <!-- ── Main ── -->
+    <main class="staff-main">
+        <!-- Topbar -->
+        <div class="staff-topbar">
+            <div class="page-title">
+                {% block page_title %}
+                    <h1>STAFF PORTAL</h1>
+                    <p>Manage your store operations</p>
+                {% endblock %}
+            </div>
+            <div class="topbar-right">
+                <div class="staff-user-badge">
+                    <div class="avatar">{{ app.user.name|first|upper }}</div>
+                    <div>
+                        <div style="color:#fff; font-weight:bold; font-size:13px;">{{ app.user.name }}</div>
+                        <div style="color:#17a2b8; font-size:11px;">Staff Member</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Flash messages -->
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="flash-msg flash-{{ label }}">
+                    <i class="fas fa-{{ label == 'success' ? 'check-circle' : (label == 'danger' ? 'exclamation-circle' : 'info-circle') }}"></i>
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {% block staff_body %}{% endblock %}
+    </main>
+</div>
+
+{% block javascripts %}{% endblock %}
+</body>
+</html>

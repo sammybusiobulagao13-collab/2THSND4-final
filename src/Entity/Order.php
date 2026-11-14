@@ -51,6 +51,9 @@ class Order
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column(length: 500, nullable: true)]
+    private ?string $cancelReason = null;
+
     #[ORM\OneToMany(mappedBy: 'order', targetEntity: OrderItem::class, cascade: ['persist', 'remove'], orphanRemoval: true)]
     private Collection $orderItems;
 
@@ -270,6 +273,17 @@ class Order
     public function getFormattedSubtotal(): string
     {
         return '₱' . number_format($this->getSubtotal(), 2);
+    }
+
+    public function getCancelReason(): ?string
+    {
+        return $this->cancelReason;
+    }
+
+    public function setCancelReason(?string $cancelReason): static
+    {
+        $this->cancelReason = $cancelReason;
+        return $this;
     }
 
     public function getFormattedTotal(): string

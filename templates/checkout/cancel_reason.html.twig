@@ -1,0 +1,365 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}2THSND4 - Cancel Order{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .cancel-page {
+        min-height: 80vh;
+        padding: 200px 0 80px;
+        background-image: url('{{ asset('images/texture.jpg') }}');
+        background-size: cover;
+        background-attachment: fixed;
+    }
+    .cancel-card {
+        max-width: 640px;
+        margin: 0 auto;
+        background: rgba(10, 10, 26, 0.92);
+        border: 1px solid rgba(220, 53, 69, 0.2);
+        border-radius: 20px;
+        padding: 45px 40px;
+        backdrop-filter: blur(16px);
+        box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(220,53,69,0.05);
+    }
+    .cancel-icon {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: rgba(220, 53, 69, 0.12);
+        border: 2px solid rgba(220, 53, 69, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        font-size: 30px;
+        color: #ff6b7b;
+    }
+    .cancel-title {
+        font-family: var(--font-primary);
+        font-size: 22px;
+        color: #fff;
+        letter-spacing: 1.5px;
+        text-align: center;
+        margin-bottom: 6px;
+    }
+    .cancel-order-info {
+        background: rgba(255,255,255,0.03);
+        border: 1px solid rgba(255,255,255,0.08);
+        border-radius: 12px;
+        padding: 16px 20px;
+        margin: 20px 0 28px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+    .cancel-order-info .order-num {
+        font-weight: bold;
+        color: #fff;
+        font-size: 15px;
+        letter-spacing: 1px;
+    }
+    .cancel-order-info .order-total {
+        color: #5dd879;
+        font-size: 18px;
+        font-weight: bold;
+    }
+    .reason-label {
+        font-size: 13px;
+        font-weight: 700;
+        color: #aaa;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 14px;
+    }
+    .reason-choices {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 20px;
+    }
+    .reason-choice {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 18px;
+        border-radius: 12px;
+        background: rgba(255,255,255,0.03);
+        border: 1.5px solid rgba(255,255,255,0.08);
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+    }
+    .reason-choice:hover {
+        border-color: rgba(220,53,69,0.4);
+        background: rgba(220,53,69,0.05);
+    }
+    .reason-choice.selected {
+        border-color: rgba(220,53,69,0.6);
+        background: rgba(220,53,69,0.08);
+    }
+    .reason-choice input[type="radio"] {
+        appearance: none;
+        -webkit-appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        border: 2px solid rgba(255,255,255,0.2);
+        background: transparent;
+        cursor: pointer;
+        flex-shrink: 0;
+        transition: all 0.2s;
+        position: relative;
+    }
+    .reason-choice input[type="radio"]:checked {
+        border-color: #ff6b7b;
+        background: #ff6b7b;
+        box-shadow: 0 0 0 3px rgba(220,53,69,0.2);
+    }
+    .reason-choice input[type="radio"]::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #fff;
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+    .reason-choice input[type="radio"]:checked::after {
+        opacity: 1;
+    }
+    .reason-text {
+        flex: 1;
+    }
+    .reason-text strong {
+        display: block;
+        color: #fff;
+        font-size: 14px;
+        margin-bottom: 2px;
+    }
+    .reason-text span {
+        color: #888;
+        font-size: 12px;
+    }
+    .reason-icon {
+        font-size: 18px;
+        width: 32px;
+        text-align: center;
+        flex-shrink: 0;
+    }
+    .custom-reason-wrap {
+        display: none;
+        margin-top: 10px;
+    }
+    .custom-reason-wrap textarea {
+        width: 100%;
+        padding: 12px 16px;
+        background: rgba(255,255,255,0.05);
+        border: 1.5px solid rgba(220,53,69,0.3);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        resize: vertical;
+        min-height: 90px;
+        box-sizing: border-box;
+        font-family: inherit;
+        transition: border-color 0.2s;
+    }
+    .custom-reason-wrap textarea:focus {
+        outline: none;
+        border-color: rgba(220,53,69,0.6);
+    }
+    .cancel-warning {
+        background: rgba(255, 193, 7, 0.07);
+        border: 1px solid rgba(255, 193, 7, 0.2);
+        border-radius: 10px;
+        padding: 12px 16px;
+        font-size: 13px;
+        color: #ffd659;
+        margin-bottom: 24px;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+    .cancel-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .btn-cancel-confirm {
+        flex: 1;
+        padding: 14px 24px;
+        border-radius: 50px;
+        background: linear-gradient(135deg, #dc3545, #c82333);
+        border: none;
+        color: #fff;
+        font-weight: 700;
+        font-size: 14px;
+        cursor: pointer;
+        letter-spacing: 1px;
+        transition: all 0.2s;
+        min-width: 180px;
+    }
+    .btn-cancel-confirm:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px rgba(220,53,69,0.4);
+    }
+    .btn-cancel-confirm:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+    .btn-keep-order {
+        flex: 1;
+        padding: 14px 24px;
+        border-radius: 50px;
+        background: transparent;
+        border: 1.5px solid rgba(255,255,255,0.2);
+        color: #aaa;
+        font-weight: 600;
+        font-size: 14px;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.2s;
+        min-width: 140px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+    }
+    .btn-keep-order:hover {
+        border-color: rgba(255,255,255,0.4);
+        color: #fff;
+    }
+</style>
+{% endblock %}
+
+{% block body %}
+<section class="cancel-page">
+    <div class="container">
+        <div class="cancel-card">
+            <div class="cancel-icon">
+                <i class="fas fa-times-circle"></i>
+            </div>
+            <h1 class="cancel-title">CANCEL ORDER</h1>
+            <p style="text-align:center; color:#888; font-size:14px; margin-bottom:0;">Please tell us why you're cancelling. This helps us improve.</p>
+
+            <div class="cancel-order-info">
+                <div>
+                    <div class="order-num">#{{ order.orderNumber }}</div>
+                    <div style="color:#888; font-size:12px; margin-top:3px;">
+                        Placed {{ order.createdAt|date('M d, Y') }} &bull; {{ order.orderItems|length }} item(s)
+                    </div>
+                </div>
+                <div class="order-total">{{ order.formattedTotal }}</div>
+            </div>
+
+            <div class="cancel-warning">
+                <i class="fas fa-exclamation-triangle" style="margin-top:2px; flex-shrink:0;"></i>
+                <div>Cancelling this order will <strong>restore stock</strong> for all items and <strong>cannot be undone</strong>. Only <em>Processing</em> and <em>Approved</em> orders can be cancelled.</div>
+            </div>
+
+            <form action="{{ path('app_cancel_order_confirm', {'id': order.id}) }}" method="POST" id="cancelReasonForm">
+                <input type="hidden" name="_token" value="{{ csrf_token('cancel_confirm_' ~ order.id) }}">
+
+                <div class="reason-label">Select a reason <span style="color:#ff6b7b;">*</span></div>
+                <div class="reason-choices">
+
+                    <label class="reason-choice" onclick="selectReason(this)">
+                        <input type="radio" name="cancel_reason" value="Changed my mind">
+                        <span class="reason-icon" style="color:#ffd659;">🤔</span>
+                        <div class="reason-text">
+                            <strong>Changed my mind</strong>
+                            <span>I no longer want this item</span>
+                        </div>
+                    </label>
+
+                    <label class="reason-choice" onclick="selectReason(this)">
+                        <input type="radio" name="cancel_reason" value="Found a better price elsewhere">
+                        <span class="reason-icon" style="color:#5bc0de;">💰</span>
+                        <div class="reason-text">
+                            <strong>Found a better price elsewhere</strong>
+                            <span>Got a lower price from another source</span>
+                        </div>
+                    </label>
+
+                    <label class="reason-choice" onclick="selectReason(this)">
+                        <input type="radio" name="cancel_reason" value="Ordered the wrong size or item">
+                        <span class="reason-icon" style="color:#ff9f43;">📦</span>
+                        <div class="reason-text">
+                            <strong>Ordered the wrong size or item</strong>
+                            <span>I made a mistake in my selection</span>
+                        </div>
+                    </label>
+
+                    <label class="reason-choice" onclick="selectReason(this)">
+                        <input type="radio" name="cancel_reason" value="Shipping takes too long">
+                        <span class="reason-icon" style="color:#a29bfe;">🚚</span>
+                        <div class="reason-text">
+                            <strong>Shipping takes too long</strong>
+                            <span>Delivery timeline doesn't work for me</span>
+                        </div>
+                    </label>
+
+                    <label class="reason-choice" onclick="selectReason(this)">
+                        <input type="radio" name="cancel_reason" value="Financial constraints">
+                        <span class="reason-icon" style="color:#fd79a8;">💳</span>
+                        <div class="reason-text">
+                            <strong>Financial constraints</strong>
+                            <span>I can't afford it at the moment</span>
+                        </div>
+                    </label>
+
+                    <label class="reason-choice" onclick="selectReason(this, true)">
+                        <input type="radio" name="cancel_reason" value="Other">
+                        <span class="reason-icon" style="color:#b2bec3;">✏️</span>
+                        <div class="reason-text" style="width:100%;">
+                            <strong>Other reason</strong>
+                            <span>Tell us in your own words</span>
+                            <div class="custom-reason-wrap" id="customReasonWrap">
+                                <textarea name="custom_reason" placeholder="Please describe your reason here..." maxlength="400"></textarea>
+                            </div>
+                        </div>
+                    </label>
+
+                </div>
+
+                <div class="cancel-actions">
+                    <a href="{{ path('app_my_orders') }}" class="btn-keep-order">
+                        <i class="fas fa-arrow-left"></i> Keep My Order
+                    </a>
+                    <button type="submit" class="btn-cancel-confirm" id="submitCancelBtn" disabled>
+                        <i class="fas fa-times-circle"></i> CONFIRM CANCELLATION
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    function selectReason(label, isOther) {
+        document.querySelectorAll('.reason-choice').forEach(el => el.classList.remove('selected'));
+        label.classList.add('selected');
+        document.getElementById('customReasonWrap').style.display = isOther ? 'block' : 'none';
+        document.getElementById('submitCancelBtn').disabled = false;
+    }
+
+    // Keyboard/direct radio interaction fallback
+    document.querySelectorAll('input[name="cancel_reason"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            document.querySelectorAll('.reason-choice').forEach(el => el.classList.remove('selected'));
+            this.closest('.reason-choice').classList.add('selected');
+            const isOther = this.value === 'Other';
+            document.getElementById('customReasonWrap').style.display = isOther ? 'block' : 'none';
+            document.getElementById('submitCancelBtn').disabled = false;
+        });
+    });
+</script>
+{% endblock %}

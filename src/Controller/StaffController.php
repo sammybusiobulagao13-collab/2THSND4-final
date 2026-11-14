@@ -4,6 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Product;
 use App\Form\ProductType;
+use App\Repository\MessageRepository;
+use App\Repository\OrderRepository;
 use App\Repository\ProductRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,7 +21,58 @@ class StaffController extends AbstractController
     #[Route('', name: 'app_staff_index')]
     public function index(): Response
     {
-        return $this->redirectToRoute('app_staff_products');
+        return $this->redirectToRoute('app_staff_dashboard');
+    }
+
+    #[Route('/dashboard', name: 'app_staff_dashboard')]
+    public function dashboard(
+        ProductRepository $productRepository,
+        OrderRepository $orderRepository,
+        MessageRepository $messageRepository
+    ): Response {
+        return $this->render('staff/dashboard.html.twig', [
+            'totalProducts'    => $productRepository->count([]),
+            'myProducts'       => count($productRepository->findByCreator($this->getUser())),
+            'totalOrders'      => $orderRepository->count([]),
+            'processingOrders' => $orderRepository->countByStatus('Processing'),
+            'approvedOrders'   => $orderRepository->countByStatus('Approved'),
+            'shippedOrders'    => $orderRepository->countByStatus('Shipped'),
+            'deliveredOrders'  => $orderRepository->countByStatus('Delivered'),
+            'cancelledOrders'  => $orderRepository->countByStatus('Cancelled'),
+            'recentOrders'     => $orderRepository->findRecent(6),
+            'unreadMessages'   => $messageRepository->countUnread(),
+            'recentMessages'   => $messageRepository->findAllOrdered(),
+        ]);
+    }
+
+    #[Route('/orders', name: 'app_staff_orders')]
+    public function orders(Request $request, OrderRepository $orderRepository): Response
+    {
+        $search = $request->query->get('search');
+        $status = $request->query->get('status');
+        $orders = $orderRepository->searchOrders($search, $status);
+
+        return $this->render('staff/orders.html.twig', [
+            'orders'           => $orders,
+            'search'           => $search,
+            'status'           => $status,
+            'totalOrders'      => $orderRepository->count([]),
+            'processingOrders' => $orderRepository->countByStatus('Processing'),
+            'approvedOrders'   => $orderRepository->countByStatus('Approved'),
+            'shippedOrders'    => $orderRepository->countByStatus('Shipped'),
+            'deliveredOrders'  => $orderRepository->countByStatus('Delivered'),
+            'cancelledOrders'  => $orderRepository->countByStatus('Cancelled'),
+        ]);
+    }
+
+    #[Route('/inquiries', name: 'app_staff_inquiries')]
+    public function inquiries(MessageRepository $messageRepository): Response
+    {
+        return $this->render('staff/inquiries.html.twig', [
+            'messages'      => $messageRepository->findAllOrdered(),
+            'unreadCount'   => $messageRepository->countUnread(),
+            'totalMessages' => $messageRepository->count([]),
+        ]);
     }
 
     #[Route('/products', name: 'app_staff_products')]

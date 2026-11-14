@@ -127,23 +127,42 @@ class CheckoutController extends AbstractController
         ]);
     }
 
-    #[Route('/order/{id}/cancel', name: 'app_cancel_order', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[Route('/order/{id}/cancel', name: 'app_cancel_order', methods: ['GET'], requirements: ['id' => '\d+'])]
     #[IsGranted('ROLE_USER')]
-    public function cancelOrder(Order $order, Request $request, EntityManagerInterface $entityManager): Response
+    public function cancelOrderForm(Order $order): Response
     {
-        // Only the order owner can cancel
         if ($order->getUser() !== $this->getUser()) {
             throw $this->createAccessDeniedException('You are not authorized to cancel this order.');
         }
+        if (!in_array($order->getStatus(), ['Processing', 'Approved'])) {
+            $this->addFlash('danger', 'This order cannot be cancelled.');
+            return $this->redirectToRoute('app_my_orders');
+        }
+        return $this->render('checkout/cancel_reason.html.twig', ['order' => $order]);
+    }
 
-        // Can only cancel Processing or Approved orders
+    #[Route('/order/{id}/cancel/confirm', name: 'app_cancel_order_confirm', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_USER')]
+    public function cancelOrderConfirm(Order $order, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        if ($order->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('You are not authorized to cancel this order.');
+        }
         if (!in_array($order->getStatus(), ['Processing', 'Approved'])) {
             $this->addFlash('danger', 'This order cannot be cancelled (already shipped, delivered, or already cancelled).');
             return $this->redirectToRoute('app_my_orders');
         }
 
-        if ($this->isCsrfTokenValid('cancel_order_' . $order->getId(), $request->request->get('_token'))) {
-            // Restore stock for each item
+        if ($this->isCsrfTokenValid('cancel_confirm_' . $order->getId(), $request->request->get('_token'))) {
+            $reason = trim($request->request->get('cancel_reason', ''));
+            $customReason = trim($request->request->get('custom_reason', ''));
+            $finalReason = ($reason === 'Other' && $customReason !== '') ? 'Other: ' . $customReason : $reason;
+
+            if (empty($finalReason)) {
+                $this->addFlash('danger', 'Please select a cancellation reason.');
+                return $this->redirectToRoute('app_cancel_order', ['id' => $order->getId()]);
+            }
+
             foreach ($order->getOrderItems() as $item) {
                 if ($item->getProduct()) {
                     $item->getProduct()->setStock($item->getProduct()->getStock() + $item->getQuantity());
@@ -151,6 +170,7 @@ class CheckoutController extends AbstractController
                 }
             }
             $order->setStatus('Cancelled');
+            $order->setCancelReason($finalReason);
             $entityManager->persist($order);
             $entityManager->flush();
 

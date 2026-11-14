@@ -1,79 +1,745 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}2THSND4 - Contact Us{% endblock %}
+{% block title %}2THSND4 - Customer Service & Concierge{% endblock %}
+
+{% block stylesheets %}
+<style>
+    .contact-page {
+        min-height: 100vh;
+        padding: 200px 0 100px;
+        background-color: #06060c;
+        background-image: 
+            radial-gradient(circle at 15% 20%, rgba(23, 162, 184, 0.08) 0%, transparent 40%),
+            radial-gradient(circle at 85% 60%, rgba(93, 216, 121, 0.05) 0%, transparent 40%),
+            url('{{ asset('images/texture.jpg') }}');
+        background-size: cover;
+        background-attachment: fixed;
+        background-position: center;
+        position: relative;
+    }
+    .contact-page::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(6, 6, 12, 0.88);
+        pointer-events: none;
+        z-index: 0;
+    }
+    .contact-page .container {
+        position: relative;
+        z-index: 1;
+        max-width: 1200px;
+    }
+
+    /* ── Hero Header ── */
+    .cs-hero {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+    .cs-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 6px 18px;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.12);
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        color: #ddd;
+        text-transform: uppercase;
+        margin-bottom: 16px;
+    }
+    .cs-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #5dd879;
+        box-shadow: 0 0 10px #5dd879;
+        animation: pulseDot 2s infinite;
+    }
+    @keyframes pulseDot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.4; transform: scale(0.85); }
+    }
+    .cs-hero h1 {
+        font-family: var(--font-primary);
+        font-size: 46px;
+        color: #fff;
+        letter-spacing: 3px;
+        margin-bottom: 12px;
+        text-shadow: 0 4px 25px rgba(0,0,0,0.8);
+    }
+    .cs-hero p {
+        font-size: 15px;
+        color: #888;
+        max-width: 620px;
+        margin: 0 auto;
+        line-height: 1.6;
+    }
+
+    /* ── Main 2-Column Grid ── */
+    .cs-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.3fr;
+        gap: 35px;
+        align-items: start;
+    }
+
+    /* ── Left Column: Support Hub & FAQs ── */
+    .cs-channels {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+        margin-bottom: 30px;
+    }
+    .cs-channel-card {
+        background: rgba(14, 14, 28, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 20px 22px;
+        backdrop-filter: blur(12px);
+        display: flex;
+        align-items: flex-start;
+        gap: 18px;
+        transition: all 0.3s ease;
+    }
+    .cs-channel-card:hover {
+        transform: translateY(-2px);
+        border-color: rgba(255, 255, 255, 0.2);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    .cs-channel-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        color: #5dd879;
+        flex-shrink: 0;
+        margin-top: 2px;
+    }
+    .cs-channel-info {
+        flex: 1;
+    }
+    .cs-channel-info .label {
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        color: #777;
+        font-weight: 700;
+        margin-bottom: 4px;
+    }
+    .cs-channel-info .value {
+        font-size: 15px;
+        font-weight: 700;
+        color: #fff;
+        margin-bottom: 4px;
+        word-break: break-all;
+    }
+    .cs-channel-info .desc {
+        font-size: 12px;
+        color: #888;
+        line-height: 1.4;
+    }
+
+    /* FAQ Box */
+    .cs-faq-box {
+        background: rgba(14, 14, 28, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 16px;
+        padding: 24px;
+        backdrop-filter: blur(12px);
+    }
+    .cs-faq-title {
+        font-family: var(--font-primary);
+        font-size: 16px;
+        letter-spacing: 1.5px;
+        color: #fff;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .cs-faq-title i { color: #ffd659; font-size: 14px; }
+    .cs-faq-list {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+    .cs-faq-item {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        padding: 14px 16px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    .cs-faq-item:hover {
+        background: rgba(255, 255, 255, 0.05);
+        border-color: rgba(255, 255, 255, 0.12);
+    }
+    .cs-faq-q {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 13px;
+        font-weight: 600;
+        color: #eee;
+    }
+    .cs-faq-q i {
+        font-size: 11px;
+        color: #777;
+        transition: transform 0.2s ease;
+    }
+    .cs-faq-item.open .cs-faq-q i {
+        transform: rotate(180deg);
+        color: #5dd879;
+    }
+    .cs-faq-a {
+        display: none;
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px dashed rgba(255, 255, 255, 0.08);
+        font-size: 12.5px;
+        color: #aaa;
+        line-height: 1.5;
+    }
+    .cs-faq-item.open .cs-faq-a {
+        display: block;
+    }
+
+    /* ── Right Column: Form Card ── */
+    .cs-form-card {
+        background: rgba(12, 12, 24, 0.85);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 38px 36px;
+        backdrop-filter: blur(16px);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+        position: relative;
+    }
+    .cs-form-header {
+        margin-bottom: 25px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+    .cs-form-header h2 {
+        font-family: var(--font-primary);
+        font-size: 22px;
+        letter-spacing: 1.5px;
+        color: #fff;
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    .cs-form-header h2 i {
+        color: #5dd879;
+        font-size: 18px;
+    }
+    .cs-form-header p {
+        font-size: 13px;
+        color: #888;
+        line-height: 1.4;
+    }
+
+    /* Topic Pills */
+    .cs-topic-section {
+        margin-bottom: 22px;
+    }
+    .cs-topic-label {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #888;
+        margin-bottom: 10px;
+        display: block;
+    }
+    .cs-topic-pills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .cs-pill {
+        padding: 7px 14px;
+        border-radius: 50px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        color: #aaa;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        user-select: none;
+    }
+    .cs-pill:hover {
+        background: rgba(255, 255, 255, 0.08);
+        color: #fff;
+        border-color: rgba(255, 255, 255, 0.25);
+    }
+    .cs-pill.active {
+        background: rgba(93, 216, 121, 0.15);
+        border-color: #5dd879;
+        color: #5dd879;
+        font-weight: 700;
+    }
+
+    /* Auth status badge inside form */
+    .cs-user-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        padding: 10px 16px;
+        margin-bottom: 22px;
+        font-size: 12.5px;
+        color: #bbb;
+    }
+    .cs-user-bar strong {
+        color: #fff;
+    }
+    .cs-user-verified {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #5dd879;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+    /* Form Fields */
+    .cs-form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+        margin-bottom: 18px;
+    }
+    .cs-form-group {
+        margin-bottom: 20px;
+    }
+    .cs-label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #888;
+        margin-bottom: 8px;
+    }
+    .cs-input {
+        width: 100%;
+        padding: 14px 18px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        font-family: inherit;
+        box-sizing: border-box;
+        transition: all 0.25s ease;
+    }
+    .cs-input:focus {
+        outline: none;
+        border-color: #ffffff;
+        background: rgba(255, 255, 255, 0.07);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+    .cs-input[readonly] {
+        background: rgba(255, 255, 255, 0.02);
+        border-color: rgba(255, 255, 255, 0.06);
+        color: #888;
+        cursor: not-allowed;
+    }
+    .cs-textarea {
+        width: 100%;
+        padding: 14px 18px;
+        background: rgba(255, 255, 255, 0.04);
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        color: #fff;
+        font-size: 14px;
+        font-family: inherit;
+        box-sizing: border-box;
+        resize: vertical;
+        min-height: 130px;
+        transition: all 0.25s ease;
+        line-height: 1.5;
+    }
+    .cs-textarea:focus {
+        outline: none;
+        border-color: #ffffff;
+        background: rgba(255, 255, 255, 0.07);
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+
+    /* Submit Button */
+    .cs-submit-btn {
+        width: 100%;
+        padding: 16px 30px;
+        border-radius: 50px;
+        background: #ffffff;
+        color: #000000;
+        border: none;
+        font-family: var(--font-primary);
+        font-size: 14px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+    }
+    .cs-submit-btn:hover {
+        background: #5dd879;
+        color: #000000;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(93, 216, 121, 0.3);
+    }
+
+    /* Guest Card */
+    .cs-guest-card {
+        text-align: center;
+        padding: 50px 30px;
+        background: rgba(14, 14, 28, 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 20px;
+        backdrop-filter: blur(12px);
+    }
+    .cs-guest-icon {
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        background: rgba(255, 193, 7, 0.1);
+        border: 1.5px solid rgba(255, 193, 7, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 26px;
+        color: #ffd659;
+        margin: 0 auto 20px;
+    }
+    .cs-guest-card h3 {
+        font-family: var(--font-primary);
+        font-size: 20px;
+        color: #fff;
+        letter-spacing: 1.5px;
+        margin-bottom: 10px;
+    }
+    .cs-guest-card p {
+        color: #888;
+        font-size: 14px;
+        max-width: 440px;
+        margin: 0 auto 25px;
+        line-height: 1.6;
+    }
+    .cs-guest-actions {
+        display: flex;
+        gap: 14px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+        .cs-grid {
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+        .cs-form-row {
+            grid-template-columns: 1fr;
+            gap: 14px;
+        }
+        .contact-page {
+            padding: 180px 15px 80px;
+        }
+        .cs-hero h1 {
+            font-size: 34px;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block body %}
 <section class="contact-page">
     <div class="container">
-        <div class="contact-page-content">
-            <h1>CONTACT US</h1>
-            <p class="contact-subtitle">We'd love to hear from you! Reach out to the 2THSND4 crew with any inquiries or feedback.</p>
 
-            <div class="contact-info">
-                <div class="contact-item">
-                    <span class="contact-icon" style="font-size: 24px;"><i class="fas fa-envelope"></i></span>
-                    <h3>Email</h3>
-                    <p>2THSND4@gmail.com</p>
+        <!-- ── HERO ── -->
+        <div class="cs-hero">
+            <div class="cs-badge">
+                <span class="cs-dot"></span>
+                <span>2THSND4 Client Services &bull; Support Online</span>
+            </div>
+            <h1>CUSTOMER SERVICE</h1>
+            <p>Direct assistance for client orders, sizing consultations, drop schedules, and technical inquiries.</p>
+        </div>
+
+        <!-- ── 2-COLUMN GRID ── -->
+        <div class="cs-grid">
+
+            <!-- LEFT COLUMN: CHANNELS & FAQS -->
+            <div>
+                <!-- Support Channels -->
+                <div class="cs-channels">
+
+                    <!-- Email -->
+                    <div class="cs-channel-card">
+                        <div class="cs-channel-icon">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="cs-channel-info">
+                            <div class="label">Official Support Email</div>
+                            <div class="value">2THSND4@gmail.com</div>
+                            <div class="desc">Client care responses within 24 hours &bull; Mon to Sat</div>
+                        </div>
+                    </div>
+
+                    <!-- Hotline -->
+                    <div class="cs-channel-card">
+                        <div class="cs-channel-icon" style="color: #17a2b8;">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <div class="cs-channel-info">
+                            <div class="label">Client Assistance Line</div>
+                            <div class="value">+63 936 313 6992</div>
+                            <div class="desc">Hotline active 9:00 AM – 6:00 PM PHT &bull; SMS / Voice</div>
+                        </div>
+                    </div>
+
+                    <!-- Studio -->
+                    <div class="cs-channel-card">
+                        <div class="cs-channel-icon" style="color: #ffd659;">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="cs-channel-info">
+                            <div class="label">Flagship Atelier &amp; Studio</div>
+                            <div class="value">Dumaguete City, Neg Or. Philippines</div>
+                            <div class="desc">In-store appointments, fittings &amp; local order dispatch</div>
+                        </div>
+                    </div>
+
                 </div>
-                <div class="contact-item">
-                    <span class="contact-icon" style="font-size: 24px;"><i class="fas fa-phone-alt"></i></span>
-                    <h3>Phone</h3>
-                    <p>+63 936 313 6992</p>
+
+                <!-- Instant FAQ Guidance -->
+                <div class="cs-faq-box">
+                    <div class="cs-faq-title">
+                        <i class="fas fa-bolt"></i>
+                        <span>QUICK HELP &amp; FREQUENT QUESTIONS</span>
+                    </div>
+
+                    <div class="cs-faq-list">
+                        <!-- FAQ 1 -->
+                        <div class="cs-faq-item" onclick="toggleFaq(this)">
+                            <div class="cs-faq-q">
+                                <span>Where do I check my order status?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="cs-faq-a">
+                                You can track all live orders directly on your 
+                                <a href="{{ path('app_my_orders') }}" style="color: #5dd879; text-decoration: underline;">My Orders</a> 
+                                page. Real-time fulfillment statuses include <em>Processing</em>, <em>Approved</em>, <em>Shipped</em>, and <em>Delivered</em>.
+                            </div>
+                        </div>
+
+                        <!-- FAQ 2 -->
+                        <div class="cs-faq-item" onclick="toggleFaq(this)">
+                            <div class="cs-faq-q">
+                                <span>What are your shipping rates and thresholds?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="cs-faq-a">
+                                Standard nationwide delivery is <strong>&#8369;120.00</strong> via LBC / J&amp;T Express. Orders totaling <strong>&#8369;2,000.00 and above</strong> automatically receive <strong>FREE SHIPPING</strong>.
+                            </div>
+                        </div>
+
+                        <!-- FAQ 3 -->
+                        <div class="cs-faq-item" onclick="toggleFaq(this)">
+                            <div class="cs-faq-q">
+                                <span>How can I cancel an accidental order?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="cs-faq-a">
+                                Customers can cancel orders while in <em>Processing</em> or <em>Approved</em> status directly through the My Orders portal. Once cancelled, inventory is automatically restocked and the order is permanently locked.
+                            </div>
+                        </div>
+
+                        <!-- FAQ 4 -->
+                        <div class="cs-faq-item" onclick="toggleFaq(this)">
+                            <div class="cs-faq-q">
+                                <span>What is your typical inquiry turnaround time?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="cs-faq-a">
+                                Messages submitted via this portal are monitored directly by our store operations crew. Expect an email update within 1 to 4 business hours during operating shifts.
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="contact-item">
-                    <span class="contact-icon" style="font-size: 24px;"><i class="fas fa-map-marker-alt"></i></span>
-                    <h3>Studio &amp; Flagship</h3>
-                    <p>Dumaguete City, Neg Or. Philippines</p>
-                </div>
+
             </div>
 
-            {% if app.user %}
-                {{ form_start(contactForm, {'attr': {'class': 'contact-form'}}) }}
+            <!-- RIGHT COLUMN: FORM OR LOGIN -->
+            <div>
+                {% if app.user %}
+                    <div class="cs-form-card">
 
-                    <div class="form-group" style="margin-bottom: 18px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            {{ form_label(contactForm.name, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; margin:0;'}}) }}
-                            <span style="font-size: 11px; color: #777;"><i class="fas fa-lock" style="font-size: 10px; margin-right: 3px;"></i> Read-only</span>
+                        <div class="cs-form-header">
+                            <h2><i class="fas fa-paper-plane"></i> DIRECT CONCIERGE MESSAGE</h2>
+                            <p>Send your message directly to our store staff. We'll reply to your account email.</p>
                         </div>
-                        {{ form_widget(contactForm.name, {'attr': {'class': 'form-input', 'readonly': 'readonly', 'style': 'width:100%; padding: 14px 18px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #aaa; cursor: not-allowed;'}}) }}
-                        <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(contactForm.name) }}</div>
-                    </div>
 
-                    <div class="form-group" style="margin-bottom: 18px;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                            {{ form_label(contactForm.email, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; margin:0;'}}) }}
-                            <span style="font-size: 11px; color: #777;"><i class="fas fa-lock" style="font-size: 10px; margin-right: 3px;"></i> Read-only</span>
+                        <!-- User authentication status -->
+                        <div class="cs-user-bar">
+                            <div>
+                                <i class="fas fa-user-circle" style="margin-right: 6px; color: #17a2b8;"></i>
+                                Signed in as <strong>{{ app.user.name }}</strong>
+                            </div>
+                            <div class="cs-user-verified">
+                                <i class="fas fa-shield-alt"></i> Verified Account
+                            </div>
                         </div>
-                        {{ form_widget(contactForm.email, {'attr': {'class': 'form-input', 'readonly': 'readonly', 'style': 'width:100%; padding: 14px 18px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08); border-radius: 8px; color: #aaa; cursor: not-allowed;'}}) }}
-                        <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(contactForm.email) }}</div>
+
+                        <!-- Quick topic selector -->
+                        <div class="cs-topic-section">
+                            <span class="cs-topic-label"><i class="fas fa-tags" style="margin-right: 5px;"></i> Quick Subject Select</span>
+                            <div class="cs-topic-pills">
+                                <span class="cs-pill" onclick="pickTopic(this, 'Order Status & Tracking')">📦 Order Status</span>
+                                <span class="cs-pill" onclick="pickTopic(this, 'Size & Fit Recommendation')">📏 Size &amp; Fit</span>
+                                <span class="cs-pill" onclick="pickTopic(this, 'Shipping & Courier Follow-up')">🚚 Shipping</span>
+                                <span class="cs-pill" onclick="pickTopic(this, 'Order Cancellation Query')">🔄 Cancellation</span>
+                                <span class="cs-pill" onclick="pickTopic(this, 'Drop & Restock Alert')">🔥 Restock Drop</span>
+                                <span class="cs-pill" onclick="pickTopic(this, 'General Customer Support')">💬 Other</span>
+                            </div>
+                        </div>
+
+                        {{ form_start(contactForm, {'attr': {'class': 'cs-contact-form', 'id': 'csContactForm'}}) }}
+
+                            <!-- Read-only Name and Email row -->
+                            <div class="cs-form-row">
+                                <div>
+                                    <div class="cs-label">
+                                        <span>Full Name</span>
+                                        <span style="font-size: 10px; color: #666;"><i class="fas fa-lock"></i> Locked</span>
+                                    </div>
+                                    {{ form_widget(contactForm.name, {
+                                        'attr': {
+                                            'class': 'cs-input',
+                                            'readonly': 'readonly'
+                                        }
+                                    }) }}
+                                    <div style="color: #ff6b7b; font-size: 11px; margin-top: 4px;">{{ form_errors(contactForm.name) }}</div>
+                                </div>
+
+                                <div>
+                                    <div class="cs-label">
+                                        <span>Email Address</span>
+                                        <span style="font-size: 10px; color: #666;"><i class="fas fa-lock"></i> Locked</span>
+                                    </div>
+                                    {{ form_widget(contactForm.email, {
+                                        'attr': {
+                                            'class': 'cs-input',
+                                            'readonly': 'readonly'
+                                        }
+                                    }) }}
+                                    <div style="color: #ff6b7b; font-size: 11px; margin-top: 4px;">{{ form_errors(contactForm.email) }}</div>
+                                </div>
+                            </div>
+
+                            <!-- Subject Field -->
+                            <div class="cs-form-group">
+                                <div class="cs-label">
+                                    <span>Subject / Inquiry Reason <span style="color: #ff6b7b;">*</span></span>
+                                </div>
+                                {{ form_widget(contactForm.subject, {
+                                    'attr': {
+                                        'class': 'cs-input',
+                                        'id': 'csSubjectInput',
+                                        'placeholder': 'e.g. Sizing inquiry for Cargo Denim / Order #2TH-...'
+                                    }
+                                }) }}
+                                <div style="color: #ff6b7b; font-size: 11px; margin-top: 4px;">{{ form_errors(contactForm.subject) }}</div>
+                            </div>
+
+                            <!-- Message Field -->
+                            <div class="cs-form-group">
+                                <div class="cs-label">
+                                    <span>Detailed Message <span style="color: #ff6b7b;">*</span></span>
+                                </div>
+                                {{ form_widget(contactForm.message, {
+                                    'attr': {
+                                        'class': 'cs-textarea',
+                                        'rows': 5,
+                                        'placeholder': 'Describe your question or concern in detail. If referencing an order, please include your order number...'
+                                    }
+                                }) }}
+                                <div style="color: #ff6b7b; font-size: 11px; margin-top: 4px;">{{ form_errors(contactForm.message) }}</div>
+                            </div>
+
+                            <button type="submit" class="cs-submit-btn">
+                                <i class="fas fa-paper-plane"></i> SUBMIT INQUIRY
+                            </button>
+
+                        {{ form_end(contactForm) }}
+
                     </div>
-
-                    <div class="form-group" style="margin-bottom: 18px;">
-                        {{ form_label(contactForm.subject, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
-                        {{ form_widget(contactForm.subject, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 14px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
-                        <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(contactForm.subject) }}</div>
+                {% else %}
+                    <!-- Guest Sign-in Banner -->
+                    <div class="cs-guest-card">
+                        <div class="cs-guest-icon">
+                            <i class="fas fa-lock"></i>
+                        </div>
+                        <h3>AUTHENTICATION REQUIRED</h3>
+                        <p>To ensure prompt follow-up and link your messages directly to your orders, please sign in to your 2THSND4 account before contacting support.</p>
+                        <div class="cs-guest-actions">
+                            <a href="{{ path('app_login') }}" class="btn btn-primary" style="padding: 12px 28px; border-radius: 50px; text-decoration: none; font-size: 13px; font-weight: bold; letter-spacing: 1px;">
+                                <i class="fas fa-sign-in-alt" style="margin-right: 6px;"></i> LOG IN TO SUBMIT
+                            </a>
+                            <a href="{{ path('app_register') }}" class="btn btn-sm" style="display: inline-flex; align-items: center; padding: 12px 24px; border-radius: 50px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.2); color: #fff; text-decoration: none; font-size: 13px;">
+                                CREATE ACCOUNT
+                            </a>
+                        </div>
                     </div>
+                {% endif %}
+            </div>
 
-                    <div class="form-group" style="margin-bottom: 25px;">
-                        {{ form_label(contactForm.message, null, {'label_attr': {'style': 'color:#aaa; font-size:13px; display:block; margin-bottom:6px;'}}) }}
-                        {{ form_widget(contactForm.message, {'attr': {'class': 'form-input', 'style': 'width:100%; padding: 14px 18px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #fff;'}}) }}
-                        <div style="color: #ff6b7b; font-size: 12px; margin-top: 4px;">{{ form_errors(contactForm.message) }}</div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" style="padding: 14px 35px; border-radius: 50px; font-weight: bold; letter-spacing: 1.5px;">
-                        <i class="fas fa-paper-plane" style="margin-right: 8px;"></i> SEND MESSAGE
-                    </button>
-
-                {{ form_end(contactForm) }}
-            {% else %}
-                <div class="login-required" style="text-align: center; padding: 40px; background: rgba(255,255,255,0.03); border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); max-width: 500px; margin: 30px auto;">
-                    <i class="fas fa-lock" style="font-size: 35px; color: #ffd659; margin-bottom: 15px;"></i>
-                    <h3 style="color: #fff; margin-bottom: 10px;">Authentication Required</h3>
-                    <p style="color: #aaa; margin-bottom: 20px;">Please log in or register an account to send a message to our support staff.</p>
-                    <a href="{{ path('app_login') }}" class="btn btn-primary" style="padding: 12px 28px; border-radius: 50px; text-decoration: none;">LOG IN / SIGN UP</a>
-                </div>
-            {% endif %}
         </div>
+
     </div>
 </section>
+
+<script>
+    // FAQ Accordion Toggle
+    function toggleFaq(item) {
+        const isOpen = item.classList.contains('open');
+        document.querySelectorAll('.cs-faq-item').forEach(el => el.classList.remove('open'));
+        if (!isOpen) {
+            item.classList.add('open');
+        }
+    }
+
+    // Quick Topic Selector
+    function pickTopic(pill, topicName) {
+        document.querySelectorAll('.cs-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        
+        const subjectInput = document.getElementById('csSubjectInput');
+        if (subjectInput) {
+            subjectInput.value = '[' + topicName + '] ';
+            subjectInput.focus();
+        }
+    }
+</script>
 {% endblock %}
