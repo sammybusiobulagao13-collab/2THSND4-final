@@ -51,6 +51,14 @@
                                 <button type="button" class="btn btn-sm" onclick="openReceiptModal('receiptModal_{{ order.id }}')" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 50px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
                                     <i class="fas fa-receipt" style="color: #5dd879;"></i> View Receipt
                                 </button>
+                                {% if order.status in ['Processing', 'Approved'] %}
+                                <form action="{{ path('app_cancel_order', {'id': order.id}) }}" method="POST" style="display:inline;" id="cancelForm_{{ order.id }}">
+                                    <input type="hidden" name="_token" value="{{ csrf_token('cancel_order_' ~ order.id) }}">
+                                    <button type="button" onclick="confirmCancel('cancelForm_{{ order.id }}', '{{ order.orderNumber }}')" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 50px; background: rgba(220,53,69,0.1); border: 1px solid rgba(220,53,69,0.35); color: #ff6b7b; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                        <i class="fas fa-times-circle"></i> Cancel Order
+                                    </button>
+                                </form>
+                                {% endif %}
                                 <a href="{{ path('app_order_confirmation', {'id': order.id}) }}" class="btn btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 50px; background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #aaa; font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.2s;" title="Open full confirmation page">
                                     <i class="fas fa-external-link-alt"></i> Page
                                 </a>
@@ -180,6 +188,12 @@
         if (modal) {
             modal.style.display = 'none';
             document.body.style.overflow = 'auto';
+        }
+    }
+
+    function confirmCancel(formId, orderNumber) {
+        if (confirm('Cancel order #' + orderNumber + '?\n\nThis cannot be undone. Your item stock will be restored.')) {
+            document.getElementById(formId).submit();
         }
     }
 

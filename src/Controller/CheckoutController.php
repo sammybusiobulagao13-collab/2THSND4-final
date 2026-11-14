@@ -126,4 +126,39 @@ class CheckoutController extends AbstractController
             'orders' => $orders,
         ]);
     }
+
+    #[Route('/order/{id}/cancel', name: 'app_cancel_order', methods: ['POST'], requirements: ['id' => '\d+'])]
+    #[IsGranted('ROLE_USER')]
+    public function cancelOrder(Order $order, Request $request, EntityManagerInterface $entityManager): Response
+    {
+        // Only the order owner can cancel
+        if ($order->getUser() !== $this->getUser()) {
+            throw $this->createAccessDeniedException('You are not authorized to cancel this order.');
+        }
+
+        // Can only cancel Processing or Approved orders
+        if (!in_array($order->getStatus(), ['Processing', 'Approved'])) {
+            $this->addFlash('danger', 'This order cannot be cancelled (already shipped, delivered, or already cancelled).');
+            return $this->redirectToRoute('app_my_orders');
+        }
+
+        if ($this->isCsrfTokenValid('cancel_order_' . $order->getId(), $request->request->get('_token'))) {
+            // Restore stock for each item
+            foreach ($order->getOrderItems() as $item) {
+                if ($item->getProduct()) {
+                    $item->getProduct()->setStock($item->getProduct()->getStock() + $item->getQuantity());
+                    $entityManager->persist($item->getProduct());
+                }
+            }
+            $order->setStatus('Cancelled');
+            $entityManager->persist($order);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Order #' . $order->getOrderNumber() . ' has been cancelled successfully.');
+        } else {
+            $this->addFlash('danger', 'Invalid security token. Please try again.');
+        }
+
+        return $this->redirectToRoute('app_my_orders');
+    }
 }

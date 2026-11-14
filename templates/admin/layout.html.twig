@@ -58,13 +58,78 @@
         }
         .admin-sidebar .sidebar-badge {
             margin-left: auto;
-            background: #dc3545;
-            color: #fff;
-            padding: 2px 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 20px;
+            height: 20px;
+            padding: 0 6px;
             border-radius: 10px;
             font-size: 11px;
-            font-weight: bold;
+            font-weight: 800;
+            line-height: 1;
         }
+        .sidebar-badge-orders {
+            background: rgba(255, 193, 7, 0.25);
+            color: #ffd659;
+            border: 1px solid rgba(255, 193, 7, 0.5);
+            box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+        }
+        .sidebar-badge-messages {
+            background: rgba(220, 53, 69, 0.25);
+            color: #ff6b7b;
+            border: 1px solid rgba(220, 53, 69, 0.5);
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.3);
+        }
+
+        /* Modal Confirmation */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 999999;
+            backdrop-filter: blur(6px);
+        }
+        .modal-box {
+            background: #111122;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 30px;
+            width: 90%;
+            max-width: 440px;
+            text-align: center;
+            box-shadow: 0 15px 50px rgba(0,0,0,0.85);
+            animation: modalFadeIn 0.25s ease;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        .modal-box h3 { color: #fff; margin-bottom: 12px; font-family: var(--font-primary); font-size: 20px; }
+        .modal-box p { color: #aaa; font-size: 14px; margin-bottom: 25px; line-height: 1.5; }
+        .modal-actions { display: flex; gap: 12px; justify-content: center; }
+        .modal-btn {
+            padding: 10px 24px;
+            border-radius: 50px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            border: none;
+        }
+        .modal-btn-cancel { background: transparent; border: 1px solid rgba(255,255,255,0.3); color: #fff; }
+        .modal-btn-cancel:hover { background: rgba(255,255,255,0.1); }
+        .modal-btn-danger { background: #dc3545; color: #fff; }
+        .modal-btn-danger:hover { background: #bd2130; }
         .admin-sidebar .logout-link {
             margin-top: 30px;
             border-top: 1px solid rgba(255,255,255,0.05);
@@ -206,13 +271,19 @@
                     </a>
                 </li>
                 <li>
-                    <a href="{{ path('app_admin_orders') }}" class="{{ app.current_route starts with 'app_admin_order' ? 'active' : '' }}">
-                        <i class="fas fa-shipping-fast"></i> <span>Orders</span>
+                    <a href="{{ path('app_admin_orders') }}" class="{{ app.current_route starts with 'app_admin_order' ? 'active' : '' }}" style="justify-content: space-between;">
+                        <span><i class="fas fa-shipping-fast"></i> Orders</span>
+                        {% if adminNotifications.pendingOrders > 0 %}
+                            <span class="sidebar-badge sidebar-badge-orders">{{ adminNotifications.pendingOrders }}</span>
+                        {% endif %}
                     </a>
                 </li>
                 <li>
-                    <a href="{{ path('app_admin_messages') }}" class="{{ app.current_route starts with 'app_admin_message' ? 'active' : '' }}">
-                        <i class="fas fa-envelope"></i> <span>Inquiries</span>
+                    <a href="{{ path('app_admin_messages') }}" class="{{ app.current_route starts with 'app_admin_message' ? 'active' : '' }}" style="justify-content: space-between;">
+                        <span><i class="fas fa-envelope"></i> Inquiries</span>
+                        {% if adminNotifications.unreadMessages > 0 %}
+                            <span class="sidebar-badge sidebar-badge-messages">{{ adminNotifications.unreadMessages }}</span>
+                        {% endif %}
                     </a>
                 </li>
                 <div style="border-top: 1px solid rgba(255,255,255,0.06); margin: 15px 0;"></div>
