@@ -15,3 +15,11 @@ services:
       MP_SMTP_AUTH_ACCEPT_ANY: 1
       MP_SMTP_ALLOW_INSECURE: 1
 ###< symfony/mailer ###
+
+  app:
+    volumes:
+      - .:/app
+      - /app/vendor
+      - /app/var
+      - ./docker/opcache.ini:/usr/local/etc/php/conf.d/custom-opcache.ini:ro
+

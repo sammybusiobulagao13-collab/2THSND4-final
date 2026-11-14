@@ -9,6 +9,7 @@ services:
       APP_ENV: dev
       APP_SECRET: 37a5a3fb25a84cf285ce0f7476757511
       DATABASE_URL: postgresql://app:!ChangeMe!@database:5432/app?serverVersion=16&charset=utf8
+      DEFAULT_URI: http://localhost:8000
     volumes:
       - .:/app
     depends_on:

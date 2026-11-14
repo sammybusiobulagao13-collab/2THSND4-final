@@ -21,6 +21,9 @@ RUN docker-php-ext-install \
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
+# Copy OPcache configuration
+COPY docker/opcache.ini /usr/local/etc/php/conf.d/custom-opcache.ini
+
 WORKDIR /app
 
 # Copy application files
