@@ -486,19 +486,21 @@ body {
 .btn-add {
     display: inline-block;
     padding: 10px 25px;
-    color: #ffffff;
+    background-color: #000000;
+    color: #ffffff !important;
     border-radius: 50px;
     text-decoration: none;
-    font-size: 15px;
+    font-size: 14px;
     font-weight: 600;
     transition: all 0.3s ease;
     border: 2px solid #ffffff;
     cursor: pointer;
+    font-family: inherit;
 }
 
 .btn-add:hover {
     background-color: #ffffff;
-    color: #0a0a1a;
+    color: #0a0a1a !important;
     transform: translateY(-3px);
     box-shadow: 0 10px 30px rgba(255, 255, 255, 0.2);
 }
@@ -700,9 +702,9 @@ body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-color: #0a0a1a;
-    padding: 60px 0 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: #050508;
+    padding: 70px 0 30px;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     position: relative;
 }
 
@@ -713,7 +715,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.88);
     z-index: 0;
 }
 
@@ -727,8 +729,8 @@ body {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 40px;
-    margin-bottom: 40px;
-    max-width: 800px;
+    margin-bottom: 45px;
+    max-width: 900px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -738,11 +740,14 @@ body {
 }
 
 .footer-col h4 {
-    font-family: var(--font-primary);
-    font-size: 20px;
-    color: var(--text-light);
+    font-family: var(--font-primary), Arial, sans-serif;
+    font-size: 17px;
+    font-weight: 800;
+    color: #ffffff;
     margin-bottom: 20px;
-    letter-spacing: 1px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    line-height: 1.35;
 }
 
 .footer-col ul {
@@ -752,59 +757,43 @@ body {
 }
 
 .footer-col ul li {
-    margin-bottom: 12px;
+    margin-bottom: 11px;
 }
 
 .footer-col ul li a {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 18px;
+    font-size: 14px;
     color: #aaaaaa;
     text-decoration: none;
-    transition: color 0.3s ease;
+    transition: color 0.25s ease;
+    display: inline-block;
 }
 
 .footer-col ul li a:hover {
-    color: var(--primary-color);
-}
-
-/*SOCIAL ICONS*/
-.social-icons {
-    display: flex;
-    justify-content: center;
-    gap: 15px;
-    margin-top: 10px;
-}
-
-.social-icons a {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.05);
     color: #ffffff;
-    font-size: 24px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.social-icons a:hover {
-    background: var(--secondary-color);
-    transform: translateY(-3px);
 }
 
 /*COPYRIGHT*/
 .footer-bottom {
     border-top: 1px solid rgba(255, 255, 255, 0.05);
-    padding-top: 20px;
+    padding-top: 25px;
     text-align: center;
 }
 
 .footer-bottom p {
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 15px;
+    font-size: 13px;
     color: #666666;
+    letter-spacing: 0.5px;
+    margin: 0;
+}
+
+@media (max-width: 768px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: 35px;
+        margin-bottom: 35px;
+    }
 }
 
 /* SHOP PAGE - WITH BACKGROUND IMAGE*/
@@ -3214,11 +3203,12 @@ body {
     width: 100%;
     height: 100%;
     background: rgba(0, 0, 0, 0.85);
-    z-index: 99999;
+    z-index: 999999;
     display: none;
     align-items: center;
     justify-content: center;
-    padding: 20px;
+    padding: 40px 20px;
+    box-sizing: border-box;
 }
 
 .receipt-modal {
@@ -3226,11 +3216,12 @@ body {
     border-radius: 20px;
     max-width: 500px;
     width: 100%;
-    max-height: 90vh;
+    max-height: calc(100vh - 80px);
     overflow-y: auto;
     border: 1px solid rgba(255, 255, 255, 0.1);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8);
     animation: receiptFade 0.3s ease;
+    margin: auto;
 }
 
 @keyframes receiptFade {

@@ -10,13 +10,17 @@
     <style>
         /* Modernized flash messages */
         .flash-container {
-            max-width: 1200px;
-            margin: 15px auto 0;
-            padding: 0 20px;
-            position: relative;
-            z-index: 999;
+            position: fixed;
+            top: 165px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 1100px;
+            z-index: 9999;
+            pointer-events: none;
         }
         .flash-alert {
+            pointer-events: auto;
             padding: 14px 20px;
             border-radius: 8px;
             margin-bottom: 12px;
@@ -26,7 +30,7 @@
             font-size: 14px;
             font-weight: 500;
             letter-spacing: 0.5px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.7);
             animation: fadeIn 0.3s ease;
         }
         .flash-success { background: rgba(40, 167, 69, 0.2); border: 1px solid #28a745; color: #5dd879; }
@@ -114,40 +118,45 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-logo">
-                <a href="{{ path('app_home') }}">
+                <a href="{{ is_granted('ROLE_STAFF') and not is_granted('ROLE_ADMIN') ? path('app_staff_products') : path('app_home') }}">
                     <img src="{{ asset('images/headerlogo.png') }}" alt="2THSND4 Logo">
                 </a>
             </div>
 
             <div class="nav-right">
                 <ul class="nav-links" id="primaryNavLinks">
-                    <li><a href="{{ path('app_home') }}" class="{{ app.current_route == 'app_home' ? 'active' : '' }}">HOME</a></li>
-                    <li><a href="{{ path('app_shop') }}" class="{{ app.current_route in ['app_shop', 'app_product_detail'] ? 'active' : '' }}">SHOP</a></li>
-                    <li><a href="{{ path('app_about') }}" class="{{ app.current_route == 'app_about' ? 'active' : '' }}">ABOUT</a></li>
-                    <li><a href="{{ path('app_contact') }}" class="{{ app.current_route == 'app_contact' ? 'active' : '' }}">CONTACT</a></li>
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <li><a href="{{ path('app_admin_dashboard') }}" style="color: #ff4d5a;"><i class="fas fa-shield-alt"></i> ADMIN</a></li>
-                    {% elseif is_granted('ROLE_STAFF') %}
-                        <li><a href="{{ path('app_staff_products') }}" style="color: #17a2b8;"><i class="fas fa-tags"></i> STAFF</a></li>
+                    {% if is_granted('ROLE_STAFF') and not is_granted('ROLE_ADMIN') %}
+                        <li><a href="{{ path('app_staff_products') }}" class="{{ app.current_route in ['app_staff_products', 'app_staff_index'] ? 'active' : '' }}" style="color: #17a2b8;"><i class="fas fa-boxes"></i> STAFF PRODUCTS</a></li>
+                        <li><a href="{{ path('app_staff_product_new') }}" class="{{ app.current_route == 'app_staff_product_new' ? 'active' : '' }}"><i class="fas fa-plus-circle"></i> ADD PRODUCT</a></li>
+                    {% else %}
+                        <li><a href="{{ path('app_home') }}" class="{{ app.current_route == 'app_home' ? 'active' : '' }}">HOME</a></li>
+                        <li><a href="{{ path('app_shop') }}" class="{{ app.current_route in ['app_shop', 'app_product_detail'] ? 'active' : '' }}">SHOP</a></li>
+                        <li><a href="{{ path('app_about') }}" class="{{ app.current_route == 'app_about' ? 'active' : '' }}">ABOUT</a></li>
+                        <li><a href="{{ path('app_contact') }}" class="{{ app.current_route == 'app_contact' ? 'active' : '' }}">CONTACT</a></li>
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <li><a href="{{ path('app_admin_dashboard') }}" style="color: #ff4d5a;"><i class="fas fa-shield-alt"></i> ADMIN</a></li>
+                        {% endif %}
                     {% endif %}
                 </ul>
 
                 <div class="nav-icons">
-                    <!-- Search Bar Toggle -->
-                    <div class="search-wrapper">
-                        <a href="#" class="search-icon" id="searchToggle" title="Search catalog"><i class="fas fa-search"></i></a>
-                        <div class="search-dropdown" id="searchDropdown">
-                            <form action="{{ path('app_shop') }}" method="GET" style="display: flex; width: 100%;">
-                                <input type="text" name="search" placeholder="Search products..." id="searchInput" value="{{ app.request.query.get('search') }}">
-                                <button type="submit"><i class="fas fa-arrow-right"></i></button>
-                            </form>
+                    {% if not (is_granted('ROLE_STAFF') and not is_granted('ROLE_ADMIN')) %}
+                        <!-- Search Bar Toggle -->
+                        <div class="search-wrapper">
+                            <a href="#" class="search-icon" id="searchToggle" title="Search catalog"><i class="fas fa-search"></i></a>
+                            <div class="search-dropdown" id="searchDropdown">
+                                <form action="{{ path('app_shop') }}" method="GET" style="display: flex; width: 100%;">
+                                    <input type="text" name="search" placeholder="Search products..." id="searchInput" value="{{ app.request.query.get('search') }}">
+                                    <button type="submit"><i class="fas fa-arrow-right"></i></button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
 
-                    <!-- Cart Icon with badge -->
-                    <a href="{{ path('app_cart') }}" class="cart-icon" style="color: #fff; margin-right: 15px; position: relative;" title="View Cart">
-                        <i class="fas fa-shopping-cart"></i>
-                    </a>
+                        <!-- Cart Icon with badge -->
+                        <a href="{{ path('app_cart') }}" class="cart-icon" style="color: #fff; margin-right: 15px; position: relative;" title="View Cart">
+                            <i class="fas fa-shopping-cart"></i>
+                        </a>
+                    {% endif %}
 
                     <!-- Profile / Dropdown Menu Trigger -->
                     <button class="menu-toggle" id="menuToggle" title="Account Menu">
@@ -200,11 +209,13 @@
                                 <div class="dropdown-divider"></div>
                             {% endif %}
 
-                            <li><a href="{{ path('app_cart') }}"><i class="fas fa-shopping-cart"></i> My Cart</a></li>
-                            <li><a href="{{ path('app_my_orders') }}"><i class="fas fa-box"></i> My Orders</a></li>
+                            {% if not (is_granted('ROLE_STAFF') and not is_granted('ROLE_ADMIN')) %}
+                                <li><a href="{{ path('app_cart') }}"><i class="fas fa-shopping-cart"></i> My Cart</a></li>
+                                <li><a href="{{ path('app_my_orders') }}"><i class="fas fa-box"></i> My Orders</a></li>
+                            {% endif %}
                             <li><a href="{{ path('app_profile') }}"><i class="fas fa-user-edit"></i> Profile & Password</a></li>
                             <div class="dropdown-divider"></div>
-                            <li><a href="#" onclick="openLogoutModal(event)" class="logout-item" style="color: #ff4d5a;"><i class="fas fa-sign-out-alt"></i> Log Out</a></li>
+                            <li><a href="{{ path('app_logout') }}" class="logout-item" style="color: #ff4d5a;"><i class="fas fa-sign-out-alt"></i> Log Out</a></li>
                         {% endif %}
                     </ul>
                 </div>
@@ -242,47 +253,50 @@
 
     <!-- FOOTER -->
     <footer class="footer">
-        <div class="container footer-container">
-            <div class="footer-col">
-                <img src="{{ asset('images/headerlogo.png') }}" alt="2THSND4 Logo" class="footer-logo">
-                <p>Redefining streetwear aesthetics. High precision cuts and timeless confidence engineered for the modern streets.</p>
-                <div class="footer-socials">
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-tiktok"></i></a>
-                    <a href="#"><i class="fab fa-twitter"></i></a>
+        <div class="container">
+            <div class="footer-grid">
+                <!-- Column 1: Quick Links -->
+                <div class="footer-col">
+                    <h4>QUICK LINKS</h4>
+                    <ul>
+                        {% if is_granted('ROLE_STAFF') and not is_granted('ROLE_ADMIN') %}
+                            <li><a href="{{ path('app_staff_products') }}">Staff Products</a></li>
+                            <li><a href="{{ path('app_staff_product_new') }}">Add Product</a></li>
+                            <li><a href="{{ path('app_profile') }}">My Profile</a></li>
+                        {% else %}
+                            <li><a href="{{ path('app_home') }}">Home</a></li>
+                            <li><a href="{{ path('app_shop') }}">Shop</a></li>
+                            <li><a href="{{ path('app_about') }}">About</a></li>
+                            <li><a href="{{ path('app_contact') }}">Contact</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+
+                <!-- Column 2: Customer Service -->
+                <div class="footer-col">
+                    <h4>CUSTOMER<br>SERVICE</h4>
+                    <ul>
+                        <li><a href="{{ path('app_contact') }}">FAQs</a></li>
+                        <li><a href="{{ path('app_about') }}">Shipping Information</a></li>
+                        <li><a href="{{ path('app_about') }}">Return & Exchange</a></li>
+                        <li><a href="{{ path('app_about') }}">Privacy Policy</a></li>
+                        <li><a href="{{ path('app_about') }}">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+
+                <!-- Column 3: Follow Us -->
+                <div class="footer-col">
+                    <h4>FOLLOW US</h4>
+                    <ul>
+                        <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+                        <li><a href="https://tiktok.com" target="_blank" rel="noopener noreferrer">Tiktok</a></li>
+                        <li><a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a></li>
+                    </ul>
                 </div>
             </div>
-            <div class="footer-col">
-                <h4>QUICK LINKS</h4>
-                <ul>
-                    <li><a href="{{ path('app_home') }}">Home</a></li>
-                    <li><a href="{{ path('app_shop') }}">Shop Catalog</a></li>
-                    <li><a href="{{ path('app_about') }}">About 2THSND4</a></li>
-                    <li><a href="{{ path('app_contact') }}">Contact Us</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>COLLECTIONS</h4>
-                <ul>
-                    <li><a href="{{ path('app_shop', {'category': 'T-Shirts'}) }}">Heavyweight Tees</a></li>
-                    <li><a href="{{ path('app_shop', {'category': 'Hoodies'}) }}">Fleece Hoodies</a></li>
-                    <li><a href="{{ path('app_shop', {'category': 'Jeans & Jorts'}) }}">Denim & Jorts</a></li>
-                    <li><a href="{{ path('app_shop', {'category': 'Headwear'}) }}">Caps & Beanies</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h4>STAY UPDATED</h4>
-                <p>Subscribe for exclusive drops, archive sales, and private discount codes.</p>
-                <form class="footer-form" onsubmit="event.preventDefault(); alert('Subscribed to 2THSND4 VIP list!');">
-                    <input type="email" placeholder="Enter your email" required>
-                    <button type="submit"><i class="fas fa-paper-plane"></i></button>
-                </form>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <div class="container">
-                <p>&copy; {{ "now"|date("Y") }} 2THSND4 Streetwear Co. All rights reserved. Built with Symfony 7 &amp; Docker.</p>
+
+            <div class="footer-bottom">
+                <p>&copy; {{ "now"|date("Y") }} 2THSND4. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
@@ -295,7 +309,9 @@
             <p>Are you sure you want to end your session on 2THSND4?</p>
             <div class="modal-actions">
                 <button class="modal-btn modal-btn-cancel" onclick="closeLogoutModal()">Cancel</button>
-                <a href="{{ path('app_logout') }}" class="modal-btn modal-btn-danger">Yes, Log Out</a>
+                <form action="{{ path('app_logout') }}" method="GET" style="margin:0;">
+                    <button type="submit" class="modal-btn modal-btn-danger">Yes, Log Out</button>
+                </form>
             </div>
         </div>
     </div>

@@ -91,11 +91,11 @@ if (searchToggle && searchDropdown) {
     if (searchInput) {
         searchInput.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
+                e.preventDefault();
                 const searchTerm = this.value.trim();
                 if (searchTerm) {
-                    window.location.href = 'shop.php?search=' + encodeURIComponent(searchTerm);
+                    window.location.href = '/shop?search=' + encodeURIComponent(searchTerm);
                     searchDropdown.classList.remove('active');
-                    this.value = '';
                 }
             }
         });
@@ -103,12 +103,12 @@ if (searchToggle && searchDropdown) {
 
     const searchBtn = searchDropdown.querySelector('button');
     if (searchBtn) {
-        searchBtn.addEventListener('click', function() {
+        searchBtn.addEventListener('click', function(e) {
+            e.preventDefault();
             const searchTerm = searchInput.value.trim();
             if (searchTerm) {
-                window.location.href = 'shop.php?search=' + encodeURIComponent(searchTerm);
+                window.location.href = '/shop?search=' + encodeURIComponent(searchTerm);
                 searchDropdown.classList.remove('active');
-                searchInput.value = '';
             }
         });
     }
@@ -124,40 +124,7 @@ if (shopNowBtn) {
 }
 
 
-//ADD TO CART FUNCTIONALITy
-const addToCartBtns = document.querySelectorAll('.btn-add');
-
-addToCartBtns.forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-        e.preventDefault();
-        
-        const productId = this.dataset.id;
-        const productName = this.dataset.name;
-        const productPrice = this.dataset.price;
-        const productImage = this.dataset.image;
-        const productStock = this.dataset.stock;
-        const productSizes = this.dataset.sizes || 'S,M,L,XL,XXL';
-        
-        console.log('Adding to cart:', {
-            id: productId,
-            name: productName,
-            price: productPrice,
-            image: productImage,
-            stock: productStock,
-            sizes: productSizes,
-        });
-        
-        const url = 'cart.php?add=1&id=' + encodeURIComponent(productId) + 
-                    '&name=' + encodeURIComponent(productName) + 
-                    '&price=' + encodeURIComponent(productPrice) + 
-                    '&image=' + encodeURIComponent(productImage) + 
-                    '&stock=' + encodeURIComponent(productStock) + 
-                    '&sizes=' + encodeURIComponent(productSizes) + 
-                    '&qty=1';
-        
-        window.location.href = url;
-    });
-});
+//ADD TO CART FUNCTIONALITy - Handled via HTML form POST to /cart/add/{id}
 
 
 const buyMoreBtn = document.querySelector('.buy-more-content .btn-primary');

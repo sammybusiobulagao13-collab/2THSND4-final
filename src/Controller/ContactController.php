@@ -27,6 +27,11 @@ class ContactController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if ($this->getUser()) {
+                $message->setName($this->getUser()->getName());
+                $message->setEmail($this->getUser()->getEmail());
+            }
+
             $entityManager->persist($message);
             $entityManager->flush();
 
