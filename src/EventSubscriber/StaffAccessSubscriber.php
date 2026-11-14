@@ -44,26 +44,20 @@ class StaffAccessSubscriber implements EventSubscriberInterface
             $request = $event->getRequest();
             $path = $request->getPathInfo();
 
-            // Allowed paths for staff
-            if (
-                str_starts_with($path, '/staff') ||
-                str_starts_with($path, '/profile') ||
-                str_starts_with($path, '/logout') ||
-                str_starts_with($path, '/_') ||
-                preg_match('#\.(css|js|png|jpe?g|gif|svg|webp|ico|woff2?)$#i', $path)
-            ) {
+            // STRICT RUBRIC: Staff must NEVER access admin pages
+            if (str_starts_with($path, '/admin')) {
+                if ($request->hasSession()) {
+                    $session = $request->getSession();
+                    if (method_exists($session, 'getFlashBag')) {
+                        $session->getFlashBag()->add('danger', 'Access Denied: Staff members cannot access the Admin Console.');
+                    }
+                }
+                $event->setResponse(new RedirectResponse($this->urlGenerator->generate('app_staff_dashboard')));
                 return;
             }
 
-            // Redirect any customer/public page access to the Staff Portal
-            if ($request->hasSession()) {
-                $session = $request->getSession();
-                if (method_exists($session, 'getFlashBag')) {
-                    $session->getFlashBag()->add('warning', 'Staff accounts are restricted to the Staff Portal.');
-                }
-            }
-
-            $event->setResponse(new RedirectResponse($this->urlGenerator->generate('app_staff_products')));
+            // Staff can access storefront (/shop, /product, /, /about, /contact, /cart, /staff, /profile, etc.)
+            return;
         }
     }
 }
