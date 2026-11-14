@@ -39,26 +39,157 @@
                             {% endfor %}
                         </div>
 
-                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; font-size: 13px; color: #aaa;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.06); padding-top: 12px; font-size: 13px; color: #aaa; flex-wrap: wrap; gap: 10px;">
                             <div>
                                 <span>Courier: <strong style="color: #fff;">{{ order.deliveryOption }}</strong></span> &bull; 
                                 <span>Payment: <strong style="color: #fff;">{{ order.paymentMethod }}</strong></span>
                             </div>
-                            <div style="font-size: 18px; font-weight: bold; color: #fff;">
-                                Total: <span style="color: #5dd879;">{{ order.formattedTotal }}</span>
+                            <div style="display: flex; align-items: center; gap: 15px;">
+                                <div style="font-size: 18px; font-weight: bold; color: #fff;">
+                                    Total: <span style="color: #5dd879;">{{ order.formattedTotal }}</span>
+                                </div>
+                                <button type="button" class="btn btn-sm" onclick="openReceiptModal('receiptModal_{{ order.id }}')" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 50px; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.25); color: #fff; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;">
+                                    <i class="fas fa-receipt" style="color: #5dd879;"></i> View Receipt
+                                </button>
+                                <a href="{{ path('app_order_confirmation', {'id': order.id}) }}" class="btn btn-sm" style="display: inline-flex; align-items: center; gap: 6px; padding: 7px 16px; border-radius: 50px; background: transparent; border: 1px solid rgba(255,255,255,0.15); color: #aaa; font-size: 12px; font-weight: 600; text-decoration: none; transition: all 0.2s;" title="Open full confirmation page">
+                                    <i class="fas fa-external-link-alt"></i> Page
+                                </a>
                             </div>
                         </div>
                     </div>
                 {% endfor %}
             </div>
         {% else %}
-            <div style="text-align: center; padding: 70px 20px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.05);">
-                <div style="font-size: 50px; color: #555; margin-bottom: 15px;"><i class="fas fa-box-open"></i></div>
-                <h3 style="color: #fff; font-size: 20px; margin-bottom: 8px;">No orders found</h3>
-                <p style="color: #888; margin-bottom: 25px;">You haven't placed any orders with us yet.</p>
-                <a href="{{ path('app_shop') }}" class="btn btn-primary" style="padding: 12px 30px; border-radius: 50px; text-decoration: none;">START SHOPPING</a>
+            <div style="max-width: 580px; margin: 30px auto; text-align: center; padding: 60px 30px; background: rgba(10, 10, 26, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 16px; box-shadow: 0 15px 40px rgba(0,0,0,0.5); backdrop-filter: blur(8px);">
+                <div style="font-size: 55px; color: #555; margin-bottom: 20px;"><i class="fas fa-box-open"></i></div>
+                <h3 style="color: #fff; font-size: 22px; font-weight: 700; letter-spacing: 1.5px; margin-bottom: 12px; font-family: var(--font-primary);">NO ORDERS FOUND</h3>
+                <p style="color: #888; font-size: 14px; line-height: 1.6; max-width: 440px; margin: 0 auto 30px;">You haven't placed any orders with us yet. Discover the latest collections and place your first streetwear order.</p>
+                <div style="display: flex; justify-content: center;">
+                    <a href="{{ path('app_shop') }}" class="btn btn-primary" style="display: inline-flex !important; align-items: center; justify-content: center; width: auto; min-width: 220px; padding: 14px 35px; border-radius: 50px; text-decoration: none; font-weight: bold; letter-spacing: 1.5px;">START SHOPPING</a>
+                </div>
             </div>
         {% endif %}
     </div>
 </section>
+
+<!-- RECEIPT MODALS (Outside container so they stay above navbar) -->
+{% for order in orders %}
+    <div class="receipt-modal-overlay" id="receiptModal_{{ order.id }}" onclick="if(event.target===this) closeReceiptModal('receiptModal_{{ order.id }}')">
+        <div class="receipt-modal">
+            <div class="receipt-modal-content">
+                <div class="receipt-header">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <i class="fas fa-receipt" style="font-size: 24px; color: #5dd879;"></i>
+                        <h2 style="margin: 0; font-size: 20px;">RECEIPT</h2>
+                    </div>
+                    <button type="button" class="receipt-close" onclick="closeReceiptModal('receiptModal_{{ order.id }}')">&times;</button>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 20px; padding: 10px 0; border-bottom: 1px dashed rgba(255,255,255,0.15);">
+                    <div style="font-size: 38px; color: #5dd879; margin-bottom: 8px;">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div style="font-family: var(--font-primary); font-size: 18px; color: #fff; letter-spacing: 1px;">ORDER CONFIRMED</div>
+                    <div style="color: #aaa; font-size: 13px; margin-top: 4px;">Thank you for your order, {{ order.user.name }}!</div>
+                    <div style="display: inline-block; margin-top: 8px; padding: 4px 12px; border-radius: 20px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15); color: #fff; font-size: 13px; font-weight: bold;">
+                        Order Number: <span style="color: #5dd879;">#{{ order.orderNumber }}</span>
+                    </div>
+                </div>
+
+                <div class="receipt-info">
+                    <div class="receipt-row">
+                        <span>Date & Time</span>
+                        <strong>{{ order.createdAt|date('M d, Y, g:i A') }}</strong>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Order Status</span>
+                        <strong style="color: #ffd659;">{{ order.status }}</strong>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Customer</span>
+                        <strong>{{ order.user.name }}</strong>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Phone</span>
+                        <strong>{{ order.phone }}</strong>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Shipping Address</span>
+                        <strong style="text-align: right; max-width: 60%;">{{ order.shippingAddress }}, {{ order.city }} {{ order.zipCode }}</strong>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Courier</span>
+                        <strong>{{ order.deliveryOption }} Express</strong>
+                    </div>
+                    <div class="receipt-row">
+                        <span>Payment Method</span>
+                        <strong>{{ order.paymentMethod }}</strong>
+                    </div>
+                </div>
+
+                <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888; margin-bottom: 8px; font-weight: bold;">
+                    Purchased Items
+                </div>
+                <div class="receipt-items">
+                    {% for item in order.orderItems %}
+                        <div class="receipt-item">
+                            <div>
+                                <div style="font-weight: 600; color: #fff;">{{ item.productName }}</div>
+                                <div style="font-size: 12px; color: #888;">Size: {{ item.size }} &bull; Qty: {{ item.quantity }} &times; ₱{{ item.price|number_format(2) }}</div>
+                            </div>
+                            <div style="font-weight: bold; color: #fff;">{{ item.formattedSubtotal }}</div>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div style="border-top: 1px solid rgba(255,255,255,0.08); padding: 12px 0 6px; margin-top: 12px; font-size: 13px;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: #aaa;">
+                        <span>Subtotal:</span>
+                        <strong style="color: #fff;">{{ order.formattedSubtotal }}</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 6px; color: #aaa;">
+                        <span>Shipping Fee:</span>
+                        <strong style="{{ order.isFreeShipping ? 'color: #5dd879;' : 'color: #ffd659;' }}">{{ order.formattedShippingFee }}</strong>
+                    </div>
+                </div>
+
+                <div class="receipt-total" style="margin-top: 5px;">
+                    <span>Total Paid:</span>
+                    <strong style="color: #5dd879;">{{ order.formattedTotal }}</strong>
+                </div>
+
+                <button type="button" class="btn btn-primary" onclick="closeReceiptModal('receiptModal_{{ order.id }}')">
+                    CLOSE RECEIPT
+                </button>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+
+<script>
+    function openReceiptModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    function closeReceiptModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.receipt-modal-overlay').forEach(function(modal) {
+                modal.style.display = 'none';
+            });
+            document.body.style.overflow = 'auto';
+        }
+    });
+</script>
 {% endblock %}

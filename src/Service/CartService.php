@@ -125,18 +125,46 @@ class CartService
         }
     }
 
+    public const FREE_SHIPPING_THRESHOLD = 2000.0;
+    public const STANDARD_SHIPPING_FEE = 120.0;
+
     public function clear(): void
     {
         $this->getSession()->remove(self::CART_KEY);
     }
 
+    public function getSubtotal(): float
+    {
+        $subtotal = 0.0;
+        foreach ($this->getCart() as $item) {
+            $subtotal += (float) $item['subtotal'];
+        }
+        return $subtotal;
+    }
+
+    public function getShippingFee(): float
+    {
+        $subtotal = $this->getSubtotal();
+        if ($subtotal <= 0 || $subtotal >= self::FREE_SHIPPING_THRESHOLD) {
+            return 0.0;
+        }
+        return self::STANDARD_SHIPPING_FEE;
+    }
+
     public function getTotal(): float
     {
-        $total = 0;
-        foreach ($this->getCart() as $item) {
-            $total += $item['subtotal'];
-        }
-        return $total;
+        return $this->getSubtotal() + $this->getShippingFee();
+    }
+
+    public function isFreeShipping(): bool
+    {
+        return $this->getSubtotal() >= self::FREE_SHIPPING_THRESHOLD;
+    }
+
+    public function getRemainingForFreeShipping(): float
+    {
+        $remaining = self::FREE_SHIPPING_THRESHOLD - $this->getSubtotal();
+        return $remaining > 0 ? $remaining : 0.0;
     }
 
     public function getItemCount(): int

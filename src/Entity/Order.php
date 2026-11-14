@@ -231,6 +231,47 @@ class Order
         };
     }
 
+    public function getSubtotal(): float
+    {
+        $subtotal = 0.0;
+        foreach ($this->orderItems as $item) {
+            $subtotal += $item->getSubtotal();
+        }
+        return $subtotal;
+    }
+
+    public function getShippingFee(): float
+    {
+        $subtotal = $this->getSubtotal();
+        if ($this->total !== null) {
+            $diff = (float) $this->total - $subtotal;
+            if ($diff > 0.01) {
+                return round($diff, 2);
+            }
+        }
+        // If subtotal is at least 2000, free shipping; otherwise standard 120
+        if ($subtotal > 0 && $subtotal < 2000.0) {
+            return 120.0;
+        }
+        return 0.0;
+    }
+
+    public function isFreeShipping(): bool
+    {
+        return $this->getShippingFee() <= 0.01;
+    }
+
+    public function getFormattedShippingFee(): string
+    {
+        $fee = $this->getShippingFee();
+        return $fee <= 0.01 ? 'FREE' : '₱' . number_format($fee, 2);
+    }
+
+    public function getFormattedSubtotal(): string
+    {
+        return '₱' . number_format($this->getSubtotal(), 2);
+    }
+
     public function getFormattedTotal(): string
     {
         return '₱' . number_format((float) $this->total, 2);

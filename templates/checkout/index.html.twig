@@ -28,12 +28,21 @@
                 <div class="checkout-total">
                     <div class="checkout-total-row">
                         <span>Subtotal:</span>
-                        <span>₱{{ total|number_format(2) }}</span>
+                        <span>₱{{ subtotal|number_format(2) }}</span>
                     </div>
                     <div class="checkout-total-row">
                         <span>Shipping:</span>
-                        <span style="color: #5dd879; font-weight: bold;">FREE Nationwide</span>
+                        {% if isFreeShipping %}
+                            <span style="color: #5dd879; font-weight: bold;"><i class="fas fa-check-circle"></i> FREE</span>
+                        {% else %}
+                            <span style="color: #ffd659; font-weight: bold;">₱{{ shippingFee|number_format(2) }}</span>
+                        {% endif %}
                     </div>
+                    {% if not isFreeShipping %}
+                        <div style="font-size: 11px; color: #888; margin-top: -6px; margin-bottom: 8px; text-align: right;">
+                            (Free shipping on orders ₱2,000+)
+                        </div>
+                    {% endif %}
                     <div class="checkout-total-row grand-total">
                         <span>Total:</span>
                         <span>₱{{ total|number_format(2) }}</span>

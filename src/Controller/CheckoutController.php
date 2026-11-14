@@ -26,6 +26,8 @@ class CheckoutController extends AbstractController
         EntityManagerInterface $entityManager
     ): Response {
         $cart = $cartService->getCart();
+        $subtotal = $cartService->getSubtotal();
+        $shippingFee = $cartService->getShippingFee();
         $total = $cartService->getTotal();
 
         if (empty($cart)) {
@@ -94,7 +96,11 @@ class CheckoutController extends AbstractController
         return $this->render('checkout/index.html.twig', [
             'checkoutForm' => $form->createView(),
             'cart' => $cart,
+            'subtotal' => $subtotal,
+            'shippingFee' => $shippingFee,
             'total' => $total,
+            'isFreeShipping' => $cartService->isFreeShipping(),
+            'remainingForFreeShipping' => $cartService->getRemainingForFreeShipping(),
         ]);
     }
 
