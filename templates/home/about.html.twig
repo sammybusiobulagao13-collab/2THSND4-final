@@ -9,8 +9,8 @@
         padding: 200px 0 100px;
         background-color: #06060c;
         background-image: 
-            radial-gradient(circle at 10% 25%, rgba(23, 162, 184, 0.07) 0%, transparent 45%),
-            radial-gradient(circle at 90% 70%, rgba(93, 216, 121, 0.05) 0%, transparent 45%),
+            radial-gradient(circle at 10% 25%, rgba(255, 255, 255, 0.03) 0%, transparent 45%),
+            radial-gradient(circle at 90% 70%, rgba(255, 255, 255, 0.015) 0%, transparent 45%),
             url('{{ asset('images/texture.jpg') }}');
         background-size: cover;
         background-attachment: fixed;
@@ -164,8 +164,8 @@
         width: 8px;
         height: 8px;
         border-radius: 50%;
-        background: #5dd879;
-        box-shadow: 0 0 10px #5dd879;
+        background: #ffffff;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
     }
     .about-cs-header h2 {
         font-family: var(--font-primary);
@@ -236,8 +236,8 @@
         border-color: rgba(255, 255, 255, 0.15);
     }
     .cs-faq-block.open {
-        border-color: rgba(255, 214, 89, 0.4);
-        background: rgba(255, 214, 89, 0.03);
+        border-color: rgba(255, 255, 255, 0.35);
+        background: rgba(255, 255, 255, 0.04);
     }
     .cs-faq-question {
         display: flex;
@@ -254,7 +254,7 @@
     }
     .cs-faq-block.open .cs-faq-question i {
         transform: rotate(180deg);
-        color: #ffd659;
+        color: #ffffff;
     }
     .cs-faq-answer {
         display: none;
@@ -322,7 +322,7 @@
 
     /* ── Bottom CTA Banner ── */
     .about-cs-cta {
-        background: linear-gradient(135deg, rgba(23, 162, 184, 0.1) 0%, rgba(93, 216, 121, 0.06) 100%);
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
         border: 1px solid rgba(255, 255, 255, 0.12);
         border-radius: 18px;
         padding: 28px 35px;
@@ -415,7 +415,7 @@
             <div class="about-features-grid">
                 <!-- Feature 1 -->
                 <div class="about-feature-card">
-                    <div class="af-icon-box" style="background: rgba(255, 193, 7, 0.1); color: #ffd659; border-color: rgba(255, 193, 7, 0.25);">
+                    <div class="af-icon-box" style="background: rgba(255, 255, 255, 0.06); color: #ffffff; border-color: rgba(255, 255, 255, 0.16);">
                         <i class="fas fa-gem"></i>
                     </div>
                     <h3>Premium Materials</h3>
@@ -424,7 +424,7 @@
 
                 <!-- Feature 2 -->
                 <div class="about-feature-card">
-                    <div class="af-icon-box" style="background: rgba(93, 216, 121, 0.1); color: #5dd879; border-color: rgba(93, 216, 121, 0.25);">
+                    <div class="af-icon-box" style="background: rgba(255, 255, 255, 0.06); color: #ffffff; border-color: rgba(255, 255, 255, 0.16);">
                         <i class="fas fa-leaf"></i>
                     </div>
                     <h3>Sustainable Craft</h3>
@@ -433,7 +433,7 @@
 
                 <!-- Feature 3 -->
                 <div class="about-feature-card">
-                    <div class="af-icon-box" style="background: rgba(23, 162, 184, 0.1); color: #17a2b8; border-color: rgba(23, 162, 184, 0.25);">
+                    <div class="af-icon-box" style="background: rgba(255, 255, 255, 0.06); color: #ffffff; border-color: rgba(255, 255, 255, 0.16);">
                         <i class="fas fa-truck-fast"></i>
                     </div>
                     <h3>Free Shipping &#8369;2,000+</h3>
@@ -442,7 +442,7 @@
 
                 <!-- Feature 4 -->
                 <div class="about-feature-card">
-                    <div class="af-icon-box" style="background: rgba(220, 53, 69, 0.1); color: #ff6b7b; border-color: rgba(220, 53, 69, 0.25);">
+                    <div class="af-icon-box" style="background: rgba(255, 255, 255, 0.06); color: #ffffff; border-color: rgba(255, 255, 255, 0.16);">
                         <i class="fas fa-shield-alt"></i>
                     </div>
                     <h3>30-Day Guarantee</h3>
@@ -467,7 +467,7 @@
                     <!-- Left: FAQs Accordion -->
                     <div class="cs-panel-card" id="faqs">
                         <div class="cs-panel-title">
-                            <i class="fas fa-circle-question" style="color: #ffd659;"></i>
+                            <i class="fas fa-circle-question" style="color: #ffffff;"></i>
                             <span>FREQUENTLY ASKED QUESTIONS</span>
                         </div>
 
@@ -506,7 +506,7 @@
                                     <i class="fas fa-chevron-down"></i>
                                 </div>
                                 <div class="cs-faq-answer">
-                                    Yes! Customers can cancel orders while in <em>Processing</em> or <em>Approved</em> status directly through your <a href="{{ path('app_my_orders') }}" style="color: #5dd879; text-decoration: underline;">My Orders</a> page. When cancelled, inventory stock is automatically returned to the store immediately.
+                                    Yes! Customers can cancel orders while in <em>Processing</em> or <em>Approved</em> status directly through your <a href="{{ path('app_my_orders') }}" style="color: #ffffff; text-decoration: underline;">My Orders</a> page. When cancelled, inventory stock is automatically returned to the store immediately.
                                 </div>
                             </div>
 
@@ -529,13 +529,13 @@
                         <!-- Shipping Policy -->
                         <div class="cs-policy-card" id="shipping">
                             <div class="cs-panel-title">
-                                <i class="fas fa-truck-fast" style="color: #5dd879;"></i>
+                                <i class="fas fa-truck-fast" style="color: #ffffff;"></i>
                                 <span>SHIPPING &amp; DISPATCH</span>
                             </div>
 
                             <div class="cs-policy-items">
                                 <div class="cs-policy-row">
-                                    <div class="cs-policy-dot" style="color: #5dd879;">
+                                    <div class="cs-policy-dot" style="color: #ffffff; background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15);">
                                         <i class="fas fa-clock"></i>
                                     </div>
                                     <div class="cs-policy-text">
@@ -545,7 +545,7 @@
                                 </div>
 
                                 <div class="cs-policy-row">
-                                    <div class="cs-policy-dot" style="color: #ffd659;">
+                                    <div class="cs-policy-dot" style="color: #ffffff; background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15);">
                                         <i class="fas fa-tag"></i>
                                     </div>
                                     <div class="cs-policy-text">
@@ -555,7 +555,7 @@
                                 </div>
 
                                 <div class="cs-policy-row">
-                                    <div class="cs-policy-dot" style="color: #17a2b8;">
+                                    <div class="cs-policy-dot" style="color: #ffffff; background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15);">
                                         <i class="fas fa-box"></i>
                                     </div>
                                     <div class="cs-policy-text">
@@ -569,13 +569,13 @@
                         <!-- Return & Exchange Policy -->
                         <div class="cs-policy-card" id="returns">
                             <div class="cs-panel-title">
-                                <i class="fas fa-arrows-rotate" style="color: #17a2b8;"></i>
+                                <i class="fas fa-arrows-rotate" style="color: #ffffff;"></i>
                                 <span>RETURN &amp; EXCHANGE</span>
                             </div>
 
                             <div class="cs-policy-items">
                                 <div class="cs-policy-row">
-                                    <div class="cs-policy-dot" style="color: #17a2b8;">
+                                    <div class="cs-policy-dot" style="color: #ffffff; background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15);">
                                         <i class="fas fa-calendar-check"></i>
                                     </div>
                                     <div class="cs-policy-text">
@@ -585,7 +585,7 @@
                                 </div>
 
                                 <div class="cs-policy-row">
-                                    <div class="cs-policy-dot" style="color: #ff6b7b;">
+                                    <div class="cs-policy-dot" style="color: #ffffff; background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.15);">
                                         <i class="fas fa-shirt"></i>
                                     </div>
                                     <div class="cs-policy-text">
