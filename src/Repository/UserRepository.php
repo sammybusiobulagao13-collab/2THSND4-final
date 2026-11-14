@@ -32,34 +32,32 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function countStaff(): int
     {
-        return (int) $this->createQueryBuilder('u')
-            ->select('COUNT(u.id)')
-            ->where('u.roles LIKE :role')
-            ->setParameter('role', '%ROLE_STAFF%')
-            ->getQuery()
-            ->getSingleScalarResult();
+        $conn = $this->getEntityManager()->getConnection();
+        return (int) $conn->fetchOne(
+            'SELECT COUNT(id) FROM users WHERE CAST(roles AS text) LIKE :role',
+            ['role' => '%ROLE_STAFF%']
+        );
     }
 
     public function countAdmins(): int
     {
-        return (int) $this->createQueryBuilder('u')
-            ->select('COUNT(u.id)')
-            ->where('u.roles LIKE :role')
-            ->setParameter('role', '%ROLE_ADMIN%')
-            ->getQuery()
-            ->getSingleScalarResult();
+        $conn = $this->getEntityManager()->getConnection();
+        return (int) $conn->fetchOne(
+            'SELECT COUNT(id) FROM users WHERE CAST(roles AS text) LIKE :role',
+            ['role' => '%ROLE_ADMIN%']
+        );
     }
 
     public function countCustomers(): int
     {
-        return (int) $this->createQueryBuilder('u')
-            ->select('COUNT(u.id)')
-            ->where('u.roles NOT LIKE :admin')
-            ->andWhere('u.roles NOT LIKE :staff')
-            ->setParameter('admin', '%ROLE_ADMIN%')
-            ->setParameter('staff', '%ROLE_STAFF%')
-            ->getQuery()
-            ->getSingleScalarResult();
+        $conn = $this->getEntityManager()->getConnection();
+        return (int) $conn->fetchOne(
+            'SELECT COUNT(id) FROM users WHERE CAST(roles AS text) NOT LIKE :admin AND CAST(roles AS text) NOT LIKE :staff',
+            [
+                'admin' => '%ROLE_ADMIN%',
+                'staff' => '%ROLE_STAFF%',
+            ]
+        );
     }
 
     public function searchUsers(?string $query, ?string $roleFilter = null): array
@@ -73,8 +71,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         }
 
         if ($roleFilter) {
-            $qb->andWhere('u.roles LIKE :role')
-               ->setParameter('role', '%' . $roleFilter . '%');
+            $conn = $this->getEntityManager()->getConnection();
+            $ids = $conn->fetchFirstColumn(
+                'SELECT id FROM users WHERE CAST(roles AS text) LIKE :role',
+                ['role' => '%' . $roleFilter . '%']
+            );
+            if (empty($ids)) {
+                return [];
+            }
+            $qb->andWhere('u.id IN (:roleUserIds)')
+               ->setParameter('roleUserIds', $ids);
         }
 
         return $qb->getQuery()->getResult();

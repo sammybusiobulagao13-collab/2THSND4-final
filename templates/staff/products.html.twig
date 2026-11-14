@@ -5,7 +5,7 @@
 {% block stylesheets %}
 <style>
     .staff-container {
-        padding: 40px 0 100px;
+        padding: 200px 0 100px;
         min-height: 85vh;
         background-image: url('{{ asset('images/texture.jpg') }}');
         background-size: cover;
@@ -128,7 +128,7 @@
                     <p style="color: #888; font-size: 14px;">Logged in as: <strong style="color: #17a2b8;">{{ app.user.name }}</strong> (Staff)</p>
                 </div>
 
-                <div style="display: flex; gap: 12px;">
+                <div style="display: flex; gap: 12px; align-items: center;">
                     <a href="{{ path('app_staff_product_new') }}" class="btn btn-primary" style="padding: 10px 22px; border-radius: 50px; font-size: 13px; font-weight: bold;">
                         <i class="fas fa-plus-circle"></i> ADD NEW PRODUCT
                     </a>
