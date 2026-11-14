@@ -7,21 +7,19 @@
     .about-page {
         min-height: 100vh;
         padding: 200px 0 100px;
-        background-color: #06060c;
-        background-image: 
-            radial-gradient(circle at 10% 25%, rgba(255, 255, 255, 0.03) 0%, transparent 45%),
-            radial-gradient(circle at 90% 70%, rgba(255, 255, 255, 0.015) 0%, transparent 45%),
-            url('{{ asset('images/texture.jpg') }}');
+        background-color: #000000;
+        background-image: url('{{ asset('images/texture.jpg') }}');
         background-size: cover;
         background-attachment: fixed;
         background-position: center;
+        background-repeat: no-repeat;
         position: relative;
     }
     .about-page::before {
         content: '';
         position: absolute;
         top: 0; left: 0; right: 0; bottom: 0;
-        background: rgba(6, 6, 12, 0.88);
+        background: rgba(0, 0, 0, 0.75);
         pointer-events: none;
         z-index: 0;
     }
